@@ -1,0 +1,9 @@
+Building DAG of jobs...
+InputFunctionException in rule run_baypass in file /var/home/nikos/R_projects/BayPassAcorn/Snakefile, line 74:
+Error:
+  NameError: name 'glob' is not defined
+Wildcards:
+  sample=ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01
+  chunk=001
+Traceback:
+  File "/var/home/nikos/R_projects/BayPassAcorn/Snakefile", line 72, in get_chunks (rule run_baypass, line 144, /var/home/nikos/R_projects/BayPassAcorn/Snakefile)

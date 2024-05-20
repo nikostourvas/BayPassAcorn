@@ -1,0 +1,92 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Singularity containers: ignored
+Job stats:
+job               count
+--------------  -------
+all                   1
+counts2baypass        1
+pool_name_fix         1
+split_baypass        10
+vcf2counts            1
+total                14
+
+Select jobs to execute...
+Execute 1 jobs...
+
+[Fri May 17 16:13:16 2024]
+localrule vcf2counts:
+    input: data/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01.vcf
+    output: results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_counts.txt
+    log: logs/vcf2counts/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_vcf2counts.log
+    jobid: 4
+    reason: Missing output files: results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_counts.txt
+    wildcards: sample=ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01
+    resources: tmpdir=/tmp
+
+[Fri May 17 16:13:22 2024]
+Finished job 4.
+1 of 14 steps (7%) done
+Select jobs to execute...
+Execute 1 jobs...
+
+[Fri May 17 16:13:22 2024]
+localrule pool_name_fix:
+    input: results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_counts.txt
+    output: results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_counts_fixed.txt
+    jobid: 3
+    reason: Missing output files: results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_counts_fixed.txt; Input files updated by another job: results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_counts.txt
+    wildcards: sample=ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01
+    resources: tmpdir=/tmp
+
+[Fri May 17 16:13:22 2024]
+Finished job 3.
+2 of 14 steps (14%) done
+Removing temporary output results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_counts.txt.
+Select jobs to execute...
+Execute 1 jobs...
+
+[Fri May 17 16:13:22 2024]
+localrule counts2baypass:
+    input: results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_counts_fixed.txt
+    output: results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_geno_baypass.txt
+    jobid: 2
+    reason: Missing output files: results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_geno_baypass.txt; Input files updated by another job: results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_counts_fixed.txt
+    wildcards: sample=ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01
+    resources: tmpdir=/tmp
+
+[Fri May 17 16:13:44 2024]
+Finished job 2.
+3 of 14 steps (21%) done
+Select jobs to execute...
+Execute 1 jobs...
+
+[Fri May 17 16:13:44 2024]
+localrule split_baypass:
+    input: results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_geno_baypass.txt
+    output: results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_9, results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_9, results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_9, results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_9, results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_9, results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_9, results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_9, results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_9, results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_9, results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_9
+    jobid: 13
+    reason: Missing output files: results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_9; Input files updated by another job: results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_geno_baypass.txt
+    wildcards: sample=ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01, chunk=9
+    resources: tmpdir=/tmp
+
+Waiting at most 5 seconds for missing files.
+MissingOutputException in rule split_baypass in file /var/home/nikos/R_projects/BayPassAcorn/Snakefile, line 51:
+Job 13  completed successfully, but some output files are missing. Missing files after 5 seconds. This might be due to filesystem latency. If that is the case, consider to increase the wait time with --latency-wait:
+results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_9
+results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_9
+results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_9
+results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_9
+results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_9
+results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_9
+results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_9
+results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_9
+results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_9
+results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_9
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: .snakemake/log/2024-05-17T161316.681493.snakemake.log
+WorkflowError:
+At least one job did not complete successfully.

@@ -1,0 +1,14 @@
+Building DAG of jobs...
+MissingInputException in rule all in file /var/home/nikos/R_projects/BayPassAcorn/Snakefile, line 15:
+Missing input files for rule all:
+    affected files:
+        results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_2
+        results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_3
+        results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_0
+        results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_1
+        results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_7
+        results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_5
+        results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_9
+        results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_4
+        results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_8
+        results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_6

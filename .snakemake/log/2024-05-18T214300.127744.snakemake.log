@@ -1,0 +1,5 @@
+Building DAG of jobs...
+ChildIOException:
+File/directory is a child to another output:
+('/var/home/nikos/R_projects/BayPassAcorn/results/ACORN_VCF_Qrob_test_chunks', split_baypass)
+('/var/home/nikos/R_projects/BayPassAcorn/results/ACORN_VCF_Qrob_test_chunks/chunk_1', chunk_files)

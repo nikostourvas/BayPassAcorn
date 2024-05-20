@@ -1,0 +1,40 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Singularity containers: ignored
+Job stats:
+job            count
+-----------  -------
+all                1
+run_baypass       10
+total             11
+
+Select jobs to execute...
+Execute 1 jobs...
+
+[Thu May 16 22:18:13 2024]
+localrule run_baypass:
+    input: results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_007, data/poolsize
+    output: results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_007_baypass_out
+    jobid: 10
+    reason: Missing output files: results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_007_baypass_out
+    wildcards: sample=ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01, chunk=007
+    resources: tmpdir=/tmp
+
+[Thu May 16 22:18:13 2024]
+Error in rule run_baypass:
+    jobid: 10
+    input: results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_007, data/poolsize
+    output: results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_007_baypass_out
+    shell:
+        bash run_baypass.sh results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_007 data/poolsize > results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_007_baypass_out
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Removing output files of failed job run_baypass since they might be corrupted:
+results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunks/chunk_007_baypass_out
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: .snakemake/log/2024-05-16T221813.645614.snakemake.log
+WorkflowError:
+At least one job did not complete successfully.

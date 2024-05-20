@@ -1,0 +1,381 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 10
+Rules claiming more threads will be scaled down.
+Job stats:
+job               count
+--------------  -------
+all                   1
+counts2baypass        1
+pool_name_fix         1
+run_baypass_1        19
+sample_baypass        1
+vcf2counts            1
+total                24
+
+Select jobs to execute...
+Execute 1 jobs...
+
+[Mon May 20 03:14:25 2024]
+localrule vcf2counts:
+    input: data/ACORN_VCF_Qrob_test.vcf
+    output: results/ACORN_VCF_Qrob_test_counts.txt
+    log: logs/vcf2counts/ACORN_VCF_Qrob_test_vcf2counts.log
+    jobid: 5
+    reason: Missing output files: results/ACORN_VCF_Qrob_test_counts.txt
+    wildcards: sample=ACORN_VCF_Qrob_test
+    resources: tmpdir=/tmp
+
+Activating singularity image /home/nikos/other_apps/bin/poolseq_tools_0.2.11.sif
+[Mon May 20 03:14:25 2024]
+Finished job 5.
+1 of 24 steps (4%) done
+Select jobs to execute...
+Execute 1 jobs...
+
+[Mon May 20 03:14:25 2024]
+localrule pool_name_fix:
+    input: results/ACORN_VCF_Qrob_test_counts.txt
+    output: results/ACORN_VCF_Qrob_test_counts_fixed.txt
+    jobid: 4
+    reason: Missing output files: results/ACORN_VCF_Qrob_test_counts_fixed.txt; Input files updated by another job: results/ACORN_VCF_Qrob_test_counts.txt
+    wildcards: sample=ACORN_VCF_Qrob_test
+    resources: tmpdir=/tmp
+
+Activating singularity image /home/nikos/other_apps/bin/poolseq_tools_0.2.11.sif
+[Mon May 20 03:14:25 2024]
+Finished job 4.
+2 of 24 steps (8%) done
+Removing temporary output results/ACORN_VCF_Qrob_test_counts.txt.
+Select jobs to execute...
+Execute 1 jobs...
+
+[Mon May 20 03:14:25 2024]
+localrule counts2baypass:
+    input: results/ACORN_VCF_Qrob_test_counts_fixed.txt
+    output: results/ACORN_VCF_Qrob_test_geno_baypass.txt
+    jobid: 3
+    reason: Missing output files: results/ACORN_VCF_Qrob_test_geno_baypass.txt; Input files updated by another job: results/ACORN_VCF_Qrob_test_counts_fixed.txt
+    wildcards: sample=ACORN_VCF_Qrob_test
+    resources: tmpdir=/tmp
+
+Activating singularity image /home/nikos/other_apps/bin/poolseq_tools_0.2.11.sif
+[Mon May 20 03:14:26 2024]
+Finished job 3.
+3 of 24 steps (12%) done
+Select jobs to execute...
+Execute 1 jobs...
+
+[Mon May 20 03:14:26 2024]
+localrule sample_baypass:
+    input: results/ACORN_VCF_Qrob_test_geno_baypass.txt
+    output: results/ACORN_VCF_Qrob_test_geno_baypass_1.txt, results/ACORN_VCF_Qrob_test_geno_baypass_2.txt, results/ACORN_VCF_Qrob_test_geno_baypass_3.txt, results/ACORN_VCF_Qrob_test_geno_baypass_4.txt, results/ACORN_VCF_Qrob_test_geno_baypass_5.txt, results/ACORN_VCF_Qrob_test_geno_baypass_6.txt, results/ACORN_VCF_Qrob_test_geno_baypass_7.txt, results/ACORN_VCF_Qrob_test_geno_baypass_8.txt, results/ACORN_VCF_Qrob_test_geno_baypass_9.txt, results/ACORN_VCF_Qrob_test_geno_baypass_10.txt, results/ACORN_VCF_Qrob_test_geno_baypass_11.txt, results/ACORN_VCF_Qrob_test_geno_baypass_12.txt, results/ACORN_VCF_Qrob_test_geno_baypass_13.txt, results/ACORN_VCF_Qrob_test_geno_baypass_14.txt, results/ACORN_VCF_Qrob_test_geno_baypass_15.txt, results/ACORN_VCF_Qrob_test_geno_baypass_16.txt, results/ACORN_VCF_Qrob_test_geno_baypass_17.txt, results/ACORN_VCF_Qrob_test_geno_baypass_18.txt, results/ACORN_VCF_Qrob_test_geno_baypass_19.txt
+    jobid: 2
+    reason: Missing output files: results/ACORN_VCF_Qrob_test_geno_baypass_8.txt, results/ACORN_VCF_Qrob_test_geno_baypass_6.txt, results/ACORN_VCF_Qrob_test_geno_baypass_3.txt, results/ACORN_VCF_Qrob_test_geno_baypass_7.txt, results/ACORN_VCF_Qrob_test_geno_baypass_14.txt, results/ACORN_VCF_Qrob_test_geno_baypass_15.txt, results/ACORN_VCF_Qrob_test_geno_baypass_1.txt, results/ACORN_VCF_Qrob_test_geno_baypass_16.txt, results/ACORN_VCF_Qrob_test_geno_baypass_13.txt, results/ACORN_VCF_Qrob_test_geno_baypass_18.txt, results/ACORN_VCF_Qrob_test_geno_baypass_17.txt, results/ACORN_VCF_Qrob_test_geno_baypass_4.txt, results/ACORN_VCF_Qrob_test_geno_baypass_5.txt, results/ACORN_VCF_Qrob_test_geno_baypass_19.txt, results/ACORN_VCF_Qrob_test_geno_baypass_9.txt, results/ACORN_VCF_Qrob_test_geno_baypass_2.txt, results/ACORN_VCF_Qrob_test_geno_baypass_11.txt, results/ACORN_VCF_Qrob_test_geno_baypass_12.txt, results/ACORN_VCF_Qrob_test_geno_baypass_10.txt; Input files updated by another job: results/ACORN_VCF_Qrob_test_geno_baypass.txt; Code has changed since last execution
+    wildcards: sample=ACORN_VCF_Qrob_test
+    resources: tmpdir=/tmp
+
+Activating singularity image /home/nikos/other_apps/bin/poolseq_tools_0.2.11.sif
+[Mon May 20 03:14:26 2024]
+Finished job 2.
+4 of 24 steps (17%) done
+Select jobs to execute...
+Execute 10 jobs...
+
+[Mon May 20 03:14:27 2024]
+localrule run_baypass_1:
+    input: results/ACORN_VCF_Qrob_test_geno_baypass_14.txt
+    output: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_14_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_14_mat_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_14_summary_beta_params.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_14_summary_lda_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_14_summary_pi_xtx.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_14_summary_yij_pij.out
+    jobid: 18
+    reason: Missing output files: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_14_DIC.out; Input files updated by another job: results/ACORN_VCF_Qrob_test_geno_baypass_14.txt
+    wildcards: sample=ACORN_VCF_Qrob_test, i=14
+    resources: tmpdir=/tmp
+
+Activating singularity image /home/nikos/other_apps/bin/poolseq_tools_0.2.11.sif
+
+[Mon May 20 03:14:27 2024]
+localrule run_baypass_1:
+    input: results/ACORN_VCF_Qrob_test_geno_baypass_6.txt
+    output: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_6_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_6_mat_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_6_summary_beta_params.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_6_summary_lda_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_6_summary_pi_xtx.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_6_summary_yij_pij.out
+    jobid: 10
+    reason: Missing output files: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_6_DIC.out; Input files updated by another job: results/ACORN_VCF_Qrob_test_geno_baypass_6.txt
+    wildcards: sample=ACORN_VCF_Qrob_test, i=6
+    resources: tmpdir=/tmp
+
+Activating singularity image /home/nikos/other_apps/bin/poolseq_tools_0.2.11.sif
+
+[Mon May 20 03:14:27 2024]
+localrule run_baypass_1:
+    input: results/ACORN_VCF_Qrob_test_geno_baypass_1.txt
+    output: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_1_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_1_mat_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_1_summary_beta_params.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_1_summary_lda_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_1_summary_pi_xtx.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_1_summary_yij_pij.out
+    jobid: 1
+    reason: Missing output files: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_1_DIC.out; Input files updated by another job: results/ACORN_VCF_Qrob_test_geno_baypass_1.txt
+    wildcards: sample=ACORN_VCF_Qrob_test, i=1
+    resources: tmpdir=/tmp
+
+Activating singularity image /home/nikos/other_apps/bin/poolseq_tools_0.2.11.sif
+
+[Mon May 20 03:14:27 2024]
+localrule run_baypass_1:
+    input: results/ACORN_VCF_Qrob_test_geno_baypass_8.txt
+    output: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_8_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_8_mat_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_8_summary_beta_params.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_8_summary_lda_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_8_summary_pi_xtx.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_8_summary_yij_pij.out
+    jobid: 12
+    reason: Missing output files: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_8_DIC.out; Input files updated by another job: results/ACORN_VCF_Qrob_test_geno_baypass_8.txt
+    wildcards: sample=ACORN_VCF_Qrob_test, i=8
+    resources: tmpdir=/tmp
+
+Activating singularity image /home/nikos/other_apps/bin/poolseq_tools_0.2.11.sif
+
+[Mon May 20 03:14:27 2024]
+localrule run_baypass_1:
+    input: results/ACORN_VCF_Qrob_test_geno_baypass_7.txt
+    output: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_7_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_7_mat_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_7_summary_beta_params.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_7_summary_lda_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_7_summary_pi_xtx.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_7_summary_yij_pij.out
+    jobid: 11
+    reason: Missing output files: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_7_DIC.out; Input files updated by another job: results/ACORN_VCF_Qrob_test_geno_baypass_7.txt
+    wildcards: sample=ACORN_VCF_Qrob_test, i=7
+    resources: tmpdir=/tmp
+
+Activating singularity image /home/nikos/other_apps/bin/poolseq_tools_0.2.11.sif
+
+[Mon May 20 03:14:27 2024]
+localrule run_baypass_1:
+    input: results/ACORN_VCF_Qrob_test_geno_baypass_13.txt
+    output: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_13_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_13_mat_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_13_summary_beta_params.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_13_summary_lda_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_13_summary_pi_xtx.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_13_summary_yij_pij.out
+    jobid: 17
+    reason: Missing output files: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_13_DIC.out; Input files updated by another job: results/ACORN_VCF_Qrob_test_geno_baypass_13.txt
+    wildcards: sample=ACORN_VCF_Qrob_test, i=13
+    resources: tmpdir=/tmp
+
+Activating singularity image /home/nikos/other_apps/bin/poolseq_tools_0.2.11.sif
+
+[Mon May 20 03:14:27 2024]
+localrule run_baypass_1:
+    input: results/ACORN_VCF_Qrob_test_geno_baypass_5.txt
+    output: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_5_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_5_mat_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_5_summary_beta_params.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_5_summary_lda_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_5_summary_pi_xtx.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_5_summary_yij_pij.out
+    jobid: 9
+    reason: Missing output files: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_5_DIC.out; Input files updated by another job: results/ACORN_VCF_Qrob_test_geno_baypass_5.txt
+    wildcards: sample=ACORN_VCF_Qrob_test, i=5
+    resources: tmpdir=/tmp
+
+Activating singularity image /home/nikos/other_apps/bin/poolseq_tools_0.2.11.sif
+
+[Mon May 20 03:14:27 2024]
+localrule run_baypass_1:
+    input: results/ACORN_VCF_Qrob_test_geno_baypass_15.txt
+    output: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_15_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_15_mat_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_15_summary_beta_params.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_15_summary_lda_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_15_summary_pi_xtx.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_15_summary_yij_pij.out
+    jobid: 19
+    reason: Missing output files: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_15_DIC.out; Input files updated by another job: results/ACORN_VCF_Qrob_test_geno_baypass_15.txt
+    wildcards: sample=ACORN_VCF_Qrob_test, i=15
+    resources: tmpdir=/tmp
+
+Activating singularity image /home/nikos/other_apps/bin/poolseq_tools_0.2.11.sif
+
+[Mon May 20 03:14:27 2024]
+localrule run_baypass_1:
+    input: results/ACORN_VCF_Qrob_test_geno_baypass_11.txt
+    output: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_11_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_11_mat_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_11_summary_beta_params.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_11_summary_lda_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_11_summary_pi_xtx.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_11_summary_yij_pij.out
+    jobid: 15
+    reason: Missing output files: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_11_DIC.out; Input files updated by another job: results/ACORN_VCF_Qrob_test_geno_baypass_11.txt
+    wildcards: sample=ACORN_VCF_Qrob_test, i=11
+    resources: tmpdir=/tmp
+
+Activating singularity image /home/nikos/other_apps/bin/poolseq_tools_0.2.11.sif
+
+[Mon May 20 03:14:27 2024]
+localrule run_baypass_1:
+    input: results/ACORN_VCF_Qrob_test_geno_baypass_19.txt
+    output: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_19_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_19_mat_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_19_summary_beta_params.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_19_summary_lda_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_19_summary_pi_xtx.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_19_summary_yij_pij.out
+    jobid: 23
+    reason: Missing output files: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_19_DIC.out; Input files updated by another job: results/ACORN_VCF_Qrob_test_geno_baypass_19.txt
+    wildcards: sample=ACORN_VCF_Qrob_test, i=19
+    resources: tmpdir=/tmp
+
+Activating singularity image /home/nikos/other_apps/bin/poolseq_tools_0.2.11.sif
+[Mon May 20 03:15:53 2024]
+Finished job 19.
+5 of 24 steps (21%) done
+Select jobs to execute...
+Execute 1 jobs...
+
+[Mon May 20 03:15:53 2024]
+localrule run_baypass_1:
+    input: results/ACORN_VCF_Qrob_test_geno_baypass_3.txt
+    output: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_3_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_3_mat_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_3_summary_beta_params.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_3_summary_lda_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_3_summary_pi_xtx.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_3_summary_yij_pij.out
+    jobid: 7
+    reason: Missing output files: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_3_DIC.out; Input files updated by another job: results/ACORN_VCF_Qrob_test_geno_baypass_3.txt
+    wildcards: sample=ACORN_VCF_Qrob_test, i=3
+    resources: tmpdir=/tmp
+
+Activating singularity image /home/nikos/other_apps/bin/poolseq_tools_0.2.11.sif
+[Mon May 20 03:15:55 2024]
+Finished job 12.
+6 of 24 steps (25%) done
+Select jobs to execute...
+Execute 1 jobs...
+
+[Mon May 20 03:15:55 2024]
+localrule run_baypass_1:
+    input: results/ACORN_VCF_Qrob_test_geno_baypass_17.txt
+    output: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_17_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_17_mat_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_17_summary_beta_params.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_17_summary_lda_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_17_summary_pi_xtx.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_17_summary_yij_pij.out
+    jobid: 21
+    reason: Missing output files: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_17_DIC.out; Input files updated by another job: results/ACORN_VCF_Qrob_test_geno_baypass_17.txt
+    wildcards: sample=ACORN_VCF_Qrob_test, i=17
+    resources: tmpdir=/tmp
+
+Activating singularity image /home/nikos/other_apps/bin/poolseq_tools_0.2.11.sif
+[Mon May 20 03:15:56 2024]
+Finished job 23.
+7 of 24 steps (29%) done
+Select jobs to execute...
+Execute 1 jobs...
+
+[Mon May 20 03:15:56 2024]
+localrule run_baypass_1:
+    input: results/ACORN_VCF_Qrob_test_geno_baypass_9.txt
+    output: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_9_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_9_mat_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_9_summary_beta_params.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_9_summary_lda_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_9_summary_pi_xtx.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_9_summary_yij_pij.out
+    jobid: 13
+    reason: Missing output files: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_9_DIC.out; Input files updated by another job: results/ACORN_VCF_Qrob_test_geno_baypass_9.txt
+    wildcards: sample=ACORN_VCF_Qrob_test, i=9
+    resources: tmpdir=/tmp
+
+Activating singularity image /home/nikos/other_apps/bin/poolseq_tools_0.2.11.sif
+[Mon May 20 03:15:57 2024]
+Finished job 11.
+8 of 24 steps (33%) done
+Select jobs to execute...
+Execute 1 jobs...
+
+[Mon May 20 03:15:57 2024]
+localrule run_baypass_1:
+    input: results/ACORN_VCF_Qrob_test_geno_baypass_18.txt
+    output: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_18_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_18_mat_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_18_summary_beta_params.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_18_summary_lda_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_18_summary_pi_xtx.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_18_summary_yij_pij.out
+    jobid: 22
+    reason: Missing output files: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_18_DIC.out; Input files updated by another job: results/ACORN_VCF_Qrob_test_geno_baypass_18.txt
+    wildcards: sample=ACORN_VCF_Qrob_test, i=18
+    resources: tmpdir=/tmp
+
+Activating singularity image /home/nikos/other_apps/bin/poolseq_tools_0.2.11.sif
+[Mon May 20 03:15:57 2024]
+Finished job 10.
+9 of 24 steps (38%) done
+Select jobs to execute...
+Execute 1 jobs...
+
+[Mon May 20 03:15:57 2024]
+localrule run_baypass_1:
+    input: results/ACORN_VCF_Qrob_test_geno_baypass_4.txt
+    output: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_4_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_4_mat_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_4_summary_beta_params.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_4_summary_lda_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_4_summary_pi_xtx.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_4_summary_yij_pij.out
+    jobid: 8
+    reason: Missing output files: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_4_DIC.out; Input files updated by another job: results/ACORN_VCF_Qrob_test_geno_baypass_4.txt
+    wildcards: sample=ACORN_VCF_Qrob_test, i=4
+    resources: tmpdir=/tmp
+
+Activating singularity image /home/nikos/other_apps/bin/poolseq_tools_0.2.11.sif
+[Mon May 20 03:15:58 2024]
+Finished job 17.
+10 of 24 steps (42%) done
+Select jobs to execute...
+Execute 1 jobs...
+
+[Mon May 20 03:15:58 2024]
+localrule run_baypass_1:
+    input: results/ACORN_VCF_Qrob_test_geno_baypass_12.txt
+    output: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_12_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_12_mat_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_12_summary_beta_params.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_12_summary_lda_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_12_summary_pi_xtx.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_12_summary_yij_pij.out
+    jobid: 16
+    reason: Missing output files: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_12_DIC.out; Input files updated by another job: results/ACORN_VCF_Qrob_test_geno_baypass_12.txt
+    wildcards: sample=ACORN_VCF_Qrob_test, i=12
+    resources: tmpdir=/tmp
+
+Activating singularity image /home/nikos/other_apps/bin/poolseq_tools_0.2.11.sif
+[Mon May 20 03:15:58 2024]
+Finished job 15.
+11 of 24 steps (46%) done
+Select jobs to execute...
+Execute 1 jobs...
+
+[Mon May 20 03:15:58 2024]
+localrule run_baypass_1:
+    input: results/ACORN_VCF_Qrob_test_geno_baypass_16.txt
+    output: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_16_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_16_mat_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_16_summary_beta_params.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_16_summary_lda_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_16_summary_pi_xtx.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_16_summary_yij_pij.out
+    jobid: 20
+    reason: Missing output files: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_16_DIC.out; Input files updated by another job: results/ACORN_VCF_Qrob_test_geno_baypass_16.txt
+    wildcards: sample=ACORN_VCF_Qrob_test, i=16
+    resources: tmpdir=/tmp
+
+Activating singularity image /home/nikos/other_apps/bin/poolseq_tools_0.2.11.sif
+[Mon May 20 03:15:59 2024]
+Finished job 9.
+12 of 24 steps (50%) done
+Select jobs to execute...
+Execute 1 jobs...
+
+[Mon May 20 03:15:59 2024]
+localrule run_baypass_1:
+    input: results/ACORN_VCF_Qrob_test_geno_baypass_10.txt
+    output: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_10_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_10_mat_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_10_summary_beta_params.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_10_summary_lda_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_10_summary_pi_xtx.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_10_summary_yij_pij.out
+    jobid: 14
+    reason: Missing output files: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_10_DIC.out; Input files updated by another job: results/ACORN_VCF_Qrob_test_geno_baypass_10.txt
+    wildcards: sample=ACORN_VCF_Qrob_test, i=10
+    resources: tmpdir=/tmp
+
+Activating singularity image /home/nikos/other_apps/bin/poolseq_tools_0.2.11.sif
+[Mon May 20 03:16:00 2024]
+Finished job 1.
+13 of 24 steps (54%) done
+Select jobs to execute...
+Execute 1 jobs...
+
+[Mon May 20 03:16:00 2024]
+localrule run_baypass_1:
+    input: results/ACORN_VCF_Qrob_test_geno_baypass_2.txt
+    output: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_2_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_2_mat_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_2_summary_beta_params.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_2_summary_lda_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_2_summary_pi_xtx.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_2_summary_yij_pij.out
+    jobid: 6
+    reason: Missing output files: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_2_DIC.out; Input files updated by another job: results/ACORN_VCF_Qrob_test_geno_baypass_2.txt
+    wildcards: sample=ACORN_VCF_Qrob_test, i=2
+    resources: tmpdir=/tmp
+
+Activating singularity image /home/nikos/other_apps/bin/poolseq_tools_0.2.11.sif
+[Mon May 20 03:16:01 2024]
+Finished job 18.
+14 of 24 steps (58%) done
+[Mon May 20 03:17:18 2024]
+Finished job 21.
+15 of 24 steps (62%) done
+[Mon May 20 03:17:18 2024]
+Finished job 13.
+16 of 24 steps (67%) done
+[Mon May 20 03:17:21 2024]
+Finished job 7.
+17 of 24 steps (71%) done
+[Mon May 20 03:17:21 2024]
+Finished job 20.
+18 of 24 steps (75%) done
+[Mon May 20 03:17:22 2024]
+Finished job 16.
+19 of 24 steps (79%) done
+[Mon May 20 03:17:23 2024]
+Finished job 22.
+20 of 24 steps (83%) done
+[Mon May 20 03:17:24 2024]
+Finished job 8.
+21 of 24 steps (88%) done
+[Mon May 20 03:17:24 2024]
+Finished job 14.
+22 of 24 steps (92%) done
+[Mon May 20 03:17:26 2024]
+Finished job 6.
+23 of 24 steps (96%) done
+Select jobs to execute...
+Execute 1 jobs...
+
+[Mon May 20 03:17:26 2024]
+localrule all:
+    input: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_1_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_2_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_3_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_4_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_5_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_6_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_7_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_8_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_9_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_10_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_11_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_12_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_13_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_14_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_15_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_16_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_17_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_18_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_19_DIC.out
+    jobid: 0
+    reason: Input files updated by another job: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_3_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_6_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_15_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_8_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_2_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_13_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_12_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_18_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_1_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_5_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_16_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_17_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_4_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_9_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_10_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_14_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_11_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_7_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_19_DIC.out
+    resources: tmpdir=/tmp
+
+[Mon May 20 03:17:26 2024]
+Finished job 0.
+24 of 24 steps (100%) done
+Complete log: .snakemake/log/2024-05-20T031425.067850.snakemake.log
