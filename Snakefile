@@ -8,7 +8,7 @@ with open("data/sample_list.txt") as f:
      SAMPLES = f.read().splitlines()
 
 # Define number of subs for splitting the baypass input file
-N_SUBS=20
+N_SUBS=12
 
 # rule all:
 #     input:
@@ -25,7 +25,8 @@ rule all:
         expand("results/{sample}_baypassSplitOut_core/core_{i}_mat_omega.out", sample=SAMPLES,
             i=range(1,4)),
         "results/{sample}_omega_comp.pdf".format(sample=SAMPLES[0]),
-        "results/{sample}_omega_comp.csv".format(sample=SAMPLES[0])
+        "results/{sample}_omega_comp.csv".format(sample=SAMPLES[0]),
+        "results/{sample}_std_IS_model_diagnostics.pdf".format(sample=SAMPLES[0])
 
 rule vcf2genobaypass:
     input:
@@ -53,9 +54,9 @@ rule vcf2genobaypass:
 
 ## Option 1. Scanning the genome for differentiation (without covariate) 
 # running core model for scanning the genome for differentiation using the XtX statistics
-rule run_baypass_core1:
+rule run_baypass_core:
     input:
-        sub="results/subsets/{sample}.genobaypass.sub1",
+        sub="results/subsets/{sample}.genobaypass.sub{i}"
     params:
         threads=1,
         poolsizefile="results/subsets/{sample}.poolsize",
@@ -63,57 +64,15 @@ rule run_baypass_core1:
         d0yij=3,
         npilot=20
     output:
-        mat_omega = "results/{sample}_baypassSplitOut_core/core_1_mat_omega.out",
-        summary_lda_omega = "results/{sample}_baypassSplitOut_core/core_1_summary_lda_omega.out",
+        mat_omega = "results/{sample}_baypassSplitOut_core/core_{i}_mat_omega.out",
+        summary_lda_omega = "results/{sample}_baypassSplitOut_core/core_{i}_summary_lda_omega.out",
     shell:
         """
         g_baypass \
         -nthreads {params.threads} \
         -npop {params.npop} -gfile {input.sub} -poolsizefile {params.poolsizefile} \
         -d0yij {params.d0yij} -npilot {params.npilot} \
-        -outprefix results/{wildcards.sample}_baypassSplitOut_core/core_1
-        """
-
-rule run_baypass_core2:
-    input:
-        sub="results/subsets/{sample}.genobaypass.sub2",
-    params:
-        threads=1,
-        poolsizefile="results/subsets/{sample}.poolsize",
-        npop=40,
-        d0yij=3,
-        npilot=20
-    output:
-        mat_omega = "results/{sample}_baypassSplitOut_core/core_2_mat_omega.out",
-        summary_lda_omega = "results/{sample}_baypassSplitOut_core/core_2_summary_lda_omega.out",
-    shell:
-        """
-        g_baypass \
-        -nthreads {params.threads} \
-        -npop {params.npop} -gfile {input.sub} -poolsizefile {params.poolsizefile} \
-        -d0yij {params.d0yij} -npilot {params.npilot} \
-        -outprefix results/{wildcards.sample}_baypassSplitOut_core/core_2
-        """
-
-rule run_baypass_core3:
-    input:
-        sub="results/subsets/{sample}.genobaypass.sub3",
-    params:
-        threads=1,
-        poolsizefile="results/subsets/{sample}.poolsize",
-        npop=40,
-        d0yij=3,
-        npilot=20
-    output:
-        mat_omega = "results/{sample}_baypassSplitOut_core/core_3_mat_omega.out",
-        summary_lda_omega = "results/{sample}_baypassSplitOut_core/core_3_summary_lda_omega.out",
-    shell:
-        """
-        g_baypass \
-        -nthreads {params.threads} \
-        -npop {params.npop} -gfile {input.sub} -poolsizefile {params.poolsizefile} \
-        -d0yij {params.d0yij} -npilot {params.npilot} \
-        -outprefix results/{wildcards.sample}_baypassSplitOut_core/core_3
+        -outprefix results/{wildcards.sample}_baypassSplitOut_core/core_{wildcards.i}
         """
 
 rule compare_omega:
@@ -190,6 +149,15 @@ rule run_baypass_C2:
         -contrastfile {params.ecotype} -efile {params.ecotype} \
         -outprefix results/{wildcards.sample}_baypassSplitOut_contrast/contrast_{wildcards.i}
         """
+
+rule std_IS_model_diagnostics:
+    input:
+        summary_betai_reg = "results/{sample}_baypassSplitOut_contrast/contrast_1_summary_betai_reg.out",
+        summary_contrast = "results/{sample}_baypassSplitOut_contrast/contrast_1_summary_contrast.out",
+    output:
+        diagnostics_is = "results/{sample}_std_IS_model_diagnostics.pdf",
+        diagnostics_c2 = "results/{sample}_C2_model_diagnostics.pdf"
+    script: "model_diagnostics.R"
 
 rule concatenate_results:
     input:
