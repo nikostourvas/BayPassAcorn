@@ -23,7 +23,9 @@ rule all:
     input:
         expand("results/{sample}_concatenated_res_contrast.csv", sample=SAMPLES),
         expand("results/{sample}_baypassSplitOut_core/core_{i}_mat_omega.out", sample=SAMPLES,
-            i=range(1,4))
+            i=range(1,4)),
+        "results/{sample}_omega_comp.pdf".format(sample=SAMPLES[0]),
+        "results/{sample}_omega_comp.csv".format(sample=SAMPLES[0])
 
 rule vcf2genobaypass:
     input:
@@ -114,8 +116,19 @@ rule run_baypass_core3:
         -outprefix results/{wildcards.sample}_baypassSplitOut_core/core_3
         """
 
+rule compare_omega:
+    input:
+        omega1="results/{sample}_baypassSplitOut_core/core_1_mat_omega.out",
+        omega2="results/{sample}_baypassSplitOut_core/core_2_mat_omega.out",
+        omega3="results/{sample}_baypassSplitOut_core/core_3_mat_omega.out"
+    output:
+        omega_comp="results/{sample}_omega_comp.pdf",
+        omega_comp_table="results/{sample}_omega_comp.csv"
+    script: "compare_omega.R"
+
 # ## Option 2. Identifying SNPs associated with population covariate data
-# ## Note: Default is Importance Sampling (IS) covariate mode; activate MCMC mode with covmcmc ; activate auxiliary model with auxmodel
+# ## Note: Default is Importance Sampling (IS) covariate mode; activate MCMC mode with covmcmc;
+# ##       activate auxiliary model with auxmodel
 # # running standart covariate model (STD) estimating Bayes Factor (BF): parametric
 # rule run_baypass_2:
 #     input:
@@ -146,7 +159,8 @@ rule run_baypass_core3:
 #         -outprefix results/{wildcards.sample}_baypassSplitOut_std/std_{wildcards.i}
 #         """
 
-## Option 3. Running contrast analysis estimating C2 statistic: population ecotype is a binary trait (dry = -1; moist = 1)
+## Option 3. Running contrast analysis estimating C2 statistic: 
+## population ecotype is a binary trait (dry = -1; moist = 1)
 rule run_baypass_C2:
     input:
         sub="results/subsets/{sample}.genobaypass.sub{i}",
@@ -179,7 +193,8 @@ rule run_baypass_C2:
 
 rule concatenate_results:
     input:
-        contrast = expand("results/{{sample}}_baypassSplitOut_contrast/contrast_{i}_summary_betai_reg.out", i=range(1, N_SUBS+1))
+        contrast = expand("results/{{sample}}_baypassSplitOut_contrast/contrast_{i}_summary_betai_reg.out", 
+        i=range(1, N_SUBS+1))
     params:
         prefixcontrast = "results/{sample}_baypassSplitOut_contrast/contrast",
         subs=N_SUBS,
