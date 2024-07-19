@@ -1,5 +1,7 @@
 # Snakefile
 
+configfile: "config.yaml"
+
 #Define the software container
 singularity: "~/other_apps/bin/poolseq_tools_0.2.11.sif" # this path is on my system, you need to change it to your path
 
@@ -9,15 +11,6 @@ with open("data/sample_list.txt") as f:
 
 # Define number of subs for splitting the baypass input file
 N_SUBS=12
-
-# rule all:
-#     input:
-#         expand("results/{sample}_baypassSplitOut_core/core_{i}_DIC.out", sample=SAMPLES,
-#             i=range(1, N_SUBS+1)),
-#         expand("results/{sample}_baypassSplitOut_std/std_{i}_DIC.out", sample=SAMPLES,
-#             i=range(1, N_SUBS+1)),
-#         expand("results/{sample}_baypassSplitOut_contrast/contrast_{i}_DIC.out", sample=SAMPLES,
-#             i=range(1, N_SUBS+1))
 
 rule all:
     input:
@@ -60,7 +53,7 @@ rule run_baypass_core:
     params:
         threads=1,
         poolsizefile="results/subsets/{sample}.poolsize",
-        npop=40,
+        npop=lambda wildcards: config['samples'][wildcards.sample]['npop'],
         d0yij=3,
         npilot=20
     output:
@@ -85,39 +78,6 @@ rule compare_omega:
         omega_comp_table="results/{sample}_omega_comp.csv"
     script: "compare_omega.R"
 
-# ## Option 2. Identifying SNPs associated with population covariate data
-# ## Note: Default is Importance Sampling (IS) covariate mode; activate MCMC mode with covmcmc;
-# ##       activate auxiliary model with auxmodel
-# # running standart covariate model (STD) estimating Bayes Factor (BF): parametric
-# rule run_baypass_2:
-#     input:
-#         sub="results/{sample}.genobaypass.sub{i}",
-#     params:
-#         threads=1,
-#         poolsizefile="results/{sample}.poolsize",
-#         npop=40,
-#         ecotype="data/ecotype",
-#         d0yij=3,
-#         npilot=20
-#     output:
-#         covariate = "results/{sample}_baypassSplitOut_std/std_{i}_covariate.std",
-#         dic = "results/{sample}_baypassSplitOut_std/std_{i}_DIC.out",
-#         mat_omega = "results/{sample}_baypassSplitOut_std/std_{i}_mat_omega.out",
-#         summary_beta_params = "results/{sample}_baypassSplitOut_std/std_{i}_summary_beta_params.out",
-#         summary_betai_reg = "results/{sample}_baypassSplitOut_std/std_{i}_summary_betai_reg.out",
-#         summary_lda_omega = "results/{sample}_baypassSplitOut_std/std_{i}_summary_lda_omega.out",
-#         summary_pi_xtx = "results/{sample}_baypassSplitOut_std/std_{i}_summary_pi_xtx.out",
-#         summary_yij_pij = "results/{sample}_baypassSplitOut_std/std_{i}_summary_yij_pij.out"
-#     shell:
-#         """
-#         g_baypass \
-#         -nthreads {params.threads} \
-#         -npop {params.npop} -gfile {input.sub} -poolsizefile {params.poolsizefile} \
-#         -d0yij {params.d0yij} -npilot {params.npilot} \
-#         -efile {params.ecotype} \
-#         -outprefix results/{wildcards.sample}_baypassSplitOut_std/std_{wildcards.i}
-#         """
-
 ## Option 3. Running contrast analysis estimating C2 statistic: 
 ## population ecotype is a binary trait (dry = -1; moist = 1)
 rule run_baypass_C2:
@@ -127,7 +87,7 @@ rule run_baypass_C2:
     params:
         threads=1,
         poolsizefile="results/subsets/{sample}.poolsize",
-        npop=40,
+        npop=lambda wildcards: config['samples'][wildcards.sample]['npop'],
         ecotype="data/ecotype",
         d0yij=3,
         npilot=20,
@@ -150,7 +110,7 @@ rule run_baypass_C2:
         -outprefix results/{wildcards.sample}_baypassSplitOut_contrast/contrast_{wildcards.i}
         """
 
-rule std_IS_model_diagnostics:
+rule model_diagnostics:
     input:
         summary_betai_reg = "results/{sample}_baypassSplitOut_contrast/contrast_1_summary_betai_reg.out",
         summary_contrast = "results/{sample}_baypassSplitOut_contrast/contrast_1_summary_contrast.out",
