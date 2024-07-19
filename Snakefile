@@ -19,7 +19,7 @@ rule all:
             i=range(1,4)),
         "results/{sample}_omega_comp.pdf".format(sample=SAMPLES[0]),
         "results/{sample}_omega_comp.csv".format(sample=SAMPLES[0]),
-        "results/{sample}_std_IS_model_diagnostics.pdf".format(sample=SAMPLES[0])
+        "results/{sample}_C2_model_diagnostics.pdf".format(sample=SAMPLES[0])
 
 rule vcf2genobaypass:
     input:
@@ -114,9 +114,11 @@ rule model_diagnostics:
     input:
         summary_betai_reg = "results/{sample}_baypassSplitOut_contrast/contrast_1_summary_betai_reg.out",
         summary_contrast = "results/{sample}_baypassSplitOut_contrast/contrast_1_summary_contrast.out",
+    params:
+        ecotype="data/ecotype",
     output:
         diagnostics_is = "results/{sample}_std_IS_model_diagnostics.pdf",
-        diagnostics_c2 = "results/{sample}_C2_model_diagnostics.pdf"
+        diagnostics_c2 = "results/{sample}_C2_model_diagnostics.pdf",
     script: "model_diagnostics.R"
 
 rule concatenate_results:

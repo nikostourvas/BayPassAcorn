@@ -26,3 +26,17 @@ plot(ecotype.bf,ecotype.C2$log10.1.pval.,
 abline(h=3,lty=2) #0.001 p--value theshold 
 abline(v=20,lty=2) #BF threshold for decisive evidence (according to Jeffreys’ rule)
 dev.off()
+
+# Genetic offset and RONA
+# go.is = compute_genetic_offset(beta.coef=NULL,
+#                                 regfile=snp.res,
+#                                 covfile=snakemake@params[[1]], 
+#                                 newenv='ADDRELEVANTFILE',refenv=NULL,
+#                                 scalecov=TRUE,candidate.snp=NULL, 
+#                                 compute.rona=TRUE)
+
+# write.table(go.is$go,snakemake@output[[3]],quote=F,sep=",",row.names=F)
+# write.table(go.is$BtBeigenvalues,snakemake@output[[4]],quote=F,sep=",",row.names=F)
+# write.table(go.is$BtBeigenvectors,snakemake@output[[5]],quote=F,sep=",",row.names=F)
+# write.table(go.is$covimp,snakemake@output[[6]],quote=F,sep=",",row.names=F)
+# write.table(go.is$RONA,snakemake@output[[7]],quote=F,sep=",",row.names=F)
