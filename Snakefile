@@ -17,9 +17,10 @@ rule all:
         expand("results/{sample}_concatenated_res_contrast.csv", sample=SAMPLES),
         expand("results/{sample}_baypassSplitOut_core/core_{i}_mat_omega.out", sample=SAMPLES,
             i=range(1,4)),
-        "results/{sample}_omega_comp.pdf".format(sample=SAMPLES[0]),
-        "results/{sample}_omega_comp.csv".format(sample=SAMPLES[0]),
-        "results/{sample}_C2_model_diagnostics.pdf".format(sample=SAMPLES[0])
+        expand("results/{sample}_omega_comp.pdf", sample=SAMPLES),
+        expand("results/{sample}_omega_comp.csv", sample=SAMPLES),
+        expand("results/{sample}_C2_model_diagnostics.pdf", sample=SAMPLES),
+        expand("results/{sample}_xtxst_pvalue_dist.pdf", sample=SAMPLES)
 
 rule vcf2genobaypass:
     input:
@@ -52,13 +53,14 @@ rule run_baypass_core:
         sub="results/subsets/{sample}.genobaypass.sub{i}"
     params:
         threads=1,
-        poolsizefile="results/subsets/{sample}.poolsize",
+        poolsizefile="data/{sample}_poolsizes",
         npop=lambda wildcards: config['samples'][wildcards.sample]['npop'],
         d0yij=3,
         npilot=20
     output:
         mat_omega = "results/{sample}_baypassSplitOut_core/core_{i}_mat_omega.out",
         summary_lda_omega = "results/{sample}_baypassSplitOut_core/core_{i}_summary_lda_omega.out",
+        xtx_summary="results/{sample}_baypassSplitOut_core/core_{i}_summary_pi_xtx.out",
     shell:
         """
         g_baypass \
@@ -72,10 +74,12 @@ rule compare_omega:
     input:
         omega1="results/{sample}_baypassSplitOut_core/core_1_mat_omega.out",
         omega2="results/{sample}_baypassSplitOut_core/core_2_mat_omega.out",
-        omega3="results/{sample}_baypassSplitOut_core/core_3_mat_omega.out"
+        omega3="results/{sample}_baypassSplitOut_core/core_3_mat_omega.out",
+        xtx_summary="results/{sample}_baypassSplitOut_core/core_1_summary_pi_xtx.out"
     output:
         omega_comp="results/{sample}_omega_comp.pdf",
-        omega_comp_table="results/{sample}_omega_comp.csv"
+        omega_comp_table="results/{sample}_omega_comp.csv",
+        xtxst_pvalue_dist="results/{sample}_xtxst_pvalue_dist.pdf"
     script: "compare_omega.R"
 
 ## Option 3. Running contrast analysis estimating C2 statistic: 
@@ -86,9 +90,9 @@ rule run_baypass_C2:
         omegafile="results/{sample}_baypassSplitOut_core/core_1_mat_omega.out",
     params:
         threads=1,
-        poolsizefile="results/subsets/{sample}.poolsize",
+        poolsizefile="data/{sample}_poolsizes",
         npop=lambda wildcards: config['samples'][wildcards.sample]['npop'],
-        ecotype="data/ecotype",
+        ecotype="data/{sample}_ecotype",
         d0yij=3,
         npilot=20,
     output:

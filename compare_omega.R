@@ -23,3 +23,16 @@ d23 = fmd.dist(omega2,omega3)
 write.table(data.frame(d12=d12, d13=d13, d23=d23),
             snakemake@output[[2]],
             sep=",", row.names=FALSE, quote=FALSE)
+
+
+#Estimates of the XtX differentiation measures (using the calibrated XtXst estimator) 
+snp.res=read.table(snakemake@input[[4]],h=T) 
+#check behavior of the p-values associated to the XtXst estimator 
+pdf(snakemake@output[[3]],width=10,height=10)
+hist(10**(-1*snp.res$log10.1.pval.),freq=F,breaks=50) 
+abline(h=1) 
+layout(matrix(1:2,2,1)) 
+plot(snp.res$XtXst) 
+plot(snp.res$log10.1.pval.,ylab="XtX P-value (-log10 scale)") 
+abline(h=3,lty=2) #0.001 p--value theshold
+dev.off()
