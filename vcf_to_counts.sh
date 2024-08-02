@@ -35,4 +35,5 @@ bcftools query -Hf '%CHROM\t%POS\t%REF\t%ALT[\t%RD][\t%AD]\n' ${VCF}\
         NR>1 {for (i=2; i<=NF; i++) 
             gsub(/\./, NA, $i); print
         }' \
-| sed -e 's/\t\t/\tNA\t/g' 
+| sed -e 's/\t\t/\tNA\t/g' \
+| sed 's/P01.....ACORN.BOKU.Pl..//g'

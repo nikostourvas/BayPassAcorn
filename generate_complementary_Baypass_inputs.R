@@ -6,7 +6,6 @@ library(dplyr)
 # Regular expression to input the files containing the poolnames for each dataset
 datasets = list.files(path = "data", pattern="*HDplot_poolnames")
 datasets = gsub("_poolnames", "", datasets)
-lapply(datasets, generate_complementary_Baypass_inputs)
 
 generate_complementary_Baypass_inputs = function(x) {
   # Load complementary data
@@ -35,3 +34,6 @@ generate_complementary_Baypass_inputs = function(x) {
   write.table(ecotype_sub, paste0("data/", x, "_ecotype"), sep = " ", 
               col.names=FALSE, row.names=FALSE, quote=FALSE)
 }
+
+# Apply the function to all datasets
+lapply(datasets, generate_complementary_Baypass_inputs)

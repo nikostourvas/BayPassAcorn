@@ -1,3 +1,15 @@
 samples:
+  ACORN_Qrob_3GA_MinDP20_MaxMeanDP188_Miss0075_MAF005_HDplot:
+    npop: 40
+  ACORN_Qrob_3CA_MinDP20_MaxMeanDP189_Miss0075_MAF005_HDplot:
+    npop: 20
+  ACORN_Qrob_3EA_MinDP20_MaxMeanDP191_Miss0075_MAF005_HDplot:
+    npop: 20
+  ACORN_Qrob_3GP_MinDP20_MaxMeanDP189_Miss0075_MAF005_HDplot:
+    npop: 32
+  ACORN_Qrob_3EP_MinDP20_MaxMeanDP196_Miss0075_MAF005_HDplot:
+    npop: 12
   ACORN_VCF_Qrob_test:
     npop: 40
+  ACORN_Qpet_1EA:
+    npop: 12

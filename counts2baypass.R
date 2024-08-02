@@ -6,7 +6,6 @@ counts <- read.table(snakemake@input[[1]],
 original_data <- counts[ ,-c(1:4)]
 
 # Replace NAs with 0. This is ok because BayPass identifies missing data as "0 0".
-# Do we need this? I implemented it here so that the final output is similar to Devrim's.
 original_data[is.na(original_data)] <- 0
 
 # List of unique pool IDs
