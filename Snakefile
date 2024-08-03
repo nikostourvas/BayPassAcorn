@@ -10,7 +10,7 @@ with open("data/sample_list.txt") as f:
      SAMPLES = f.read().splitlines()
 
 # Define number of subs for splitting the baypass input file
-N_SUBS=4
+N_SUBS=300
 MIN_HAPLOID_POOL_SIZE=15
 N_PILOT=20 # see model details below
 
@@ -62,9 +62,9 @@ rule run_baypass_core:
         d0yij=MIN_HAPLOID_POOL_SIZE/5,
         npilot=N_PILOT,
     output:
-        mat_omega = "results/{sample}_baypassSplitOut_core/core_{i}_mat_omega.out",
-        summary_lda_omega = "results/{sample}_baypassSplitOut_core/core_{i}_summary_lda_omega.out",
-        xtx_summary="results/{sample}_baypassSplitOut_core/core_{i}_summary_pi_xtx.out",
+        mat_omega = protected("results/{sample}_baypassSplitOut_core/core_{i}_mat_omega.out"),
+        summary_lda_omega = protected("results/{sample}_baypassSplitOut_core/core_{i}_summary_lda_omega.out"),
+        xtx_summary= protected("results/{sample}_baypassSplitOut_core/core_{i}_summary_pi_xtx.out"),
     shell:
         """
         g_baypass \
@@ -87,7 +87,7 @@ rule compare_omega:
     script: "compare_omega.R"
 
 ## Option 2. Identifying SNPs associated with population covariate data
-rule run_byapass_covariate:
+rule run_baypass_covariate:
     input:
         sub="results/subsets/{sample}.genobaypass.sub{i}",
         omegafile="results/{sample}_baypassSplitOut_core/core_1_mat_omega.out",
@@ -99,13 +99,13 @@ rule run_byapass_covariate:
         d0yij=MIN_HAPLOID_POOL_SIZE/5,
         npilot=N_PILOT,
     output:
-        covariate = "results/{sample}_baypassSplitOut_covariate/covariate_{i}_covariate.std",
-        dic = "results/{sample}_baypassSplitOut_covariate/covariate_{i}_DIC.out",
-        summary_beta_params = "results/{sample}_baypassSplitOut_covariate/covariate_{i}_summary_beta_params.out",
-        summary_betai_reg = "results/{sample}_baypassSplitOut_covariate/covariate_{i}_summary_betai_reg.out",
-        summary_pi_xtx = "results/{sample}_baypassSplitOut_covariate/covariate_{i}_summary_pi_xtx.out",
-        summary_yij_pij = "results/{sample}_baypassSplitOut_covariate/covariate_{i}_summary_yij_pij.out"
-    shell:
+        protected("results/{sample}_baypassSplitOut_covariate/covariate_{i}_covariate.std"),
+        protected("results/{sample}_baypassSplitOut_covariate/covariate_{i}_DIC.out"),
+        protected("results/{sample}_baypassSplitOut_covariate/covariate_{i}_summary_beta_params.out"),
+        protected("results/{sample}_baypassSplitOut_covariate/covariate_{i}_summary_betai_reg.out"),
+        protected("results/{sample}_baypassSplitOut_covariate/covariate_{i}_summary_pi_xtx.out"),
+        protected("results/{sample}_baypassSplitOut_covariate/covariate_{i}_summary_yij_pij.out")
+    shell:    
         """
         g_baypass \
         -nthreads {params.threads} \
@@ -130,13 +130,13 @@ rule run_baypass_C2:
         d0yij=MIN_HAPLOID_POOL_SIZE/5,
         npilot=N_PILOT,
     output:
-        covariate = "results/{sample}_baypassSplitOut_contrast/contrast_{i}_covariate.std",
-        dic = "results/{sample}_baypassSplitOut_contrast/contrast_{i}_DIC.out",
-        summary_beta_params = "results/{sample}_baypassSplitOut_contrast/contrast_{i}_summary_beta_params.out",
-        summary_betai_reg = "results/{sample}_baypassSplitOut_contrast/contrast_{i}_summary_betai_reg.out",
-        summary_contrast = "results/{sample}_baypassSplitOut_contrast/contrast_{i}_summary_contrast.out",
-        summary_pi_xtx = "results/{sample}_baypassSplitOut_contrast/contrast_{i}_summary_pi_xtx.out",
-        summary_yij_pij = "results/{sample}_baypassSplitOut_contrast/contrast_{i}_summary_yij_pij.out"
+        protected("results/{sample}_baypassSplitOut_contrast/contrast_{i}_covariate.std"),
+        protected("results/{sample}_baypassSplitOut_contrast/contrast_{i}_DIC.out"),
+        protected("results/{sample}_baypassSplitOut_contrast/contrast_{i}_summary_beta_params.out"),
+        protected("results/{sample}_baypassSplitOut_contrast/contrast_{i}_summary_betai_reg.out"),
+        protected("results/{sample}_baypassSplitOut_contrast/contrast_{i}_summary_contrast.out"),
+        protected("results/{sample}_baypassSplitOut_contrast/contrast_{i}_summary_pi_xtx.out"),
+        protected("results/{sample}_baypassSplitOut_contrast/contrast_{i}_summary_yij_pij.out")
     shell:
         """
         g_baypass \
