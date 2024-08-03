@@ -6,4 +6,5 @@
 /results
 /results (another copy)
 /results (copy)
-/results (thinning).snakemake/
+/results (thinning)
+.snakemake/
