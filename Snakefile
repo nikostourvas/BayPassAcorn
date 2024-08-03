@@ -11,6 +11,8 @@ with open("data/sample_list.txt") as f:
 
 # Define number of subs for splitting the baypass input file
 N_SUBS=4
+MIN_HAPLOID_POOL_SIZE=15
+N_PILOT=20 # see model details below
 
 rule all:
     input:
@@ -57,8 +59,8 @@ rule run_baypass_core:
         threads=1,
         poolsizefile="data/{sample}_poolsizes",
         npop=lambda wildcards: config['samples'][wildcards.sample]['npop'],
-        d0yij=3,
-        npilot=20
+        d0yij=MIN_HAPLOID_POOL_SIZE/5,
+        npilot=N_PILOT,
     output:
         mat_omega = "results/{sample}_baypassSplitOut_core/core_{i}_mat_omega.out",
         summary_lda_omega = "results/{sample}_baypassSplitOut_core/core_{i}_summary_lda_omega.out",
@@ -94,8 +96,8 @@ rule run_byapass_covariate:
         poolsizefile="data/{sample}_poolsizes",
         npop=lambda wildcards: config['samples'][wildcards.sample]['npop'],
         efile="data/{sample}_efile",
-        d0yij=3,
-        npilot=20,
+        d0yij=MIN_HAPLOID_POOL_SIZE/5,
+        npilot=N_PILOT,
     output:
         covariate = "results/{sample}_baypassSplitOut_covariate/covariate_{i}_covariate.std",
         dic = "results/{sample}_baypassSplitOut_covariate/covariate_{i}_DIC.out",
@@ -125,8 +127,8 @@ rule run_baypass_C2:
         poolsizefile="data/{sample}_poolsizes",
         npop=lambda wildcards: config['samples'][wildcards.sample]['npop'],
         ecotype="data/{sample}_ecotype",
-        d0yij=3,
-        npilot=20,
+        d0yij=MIN_HAPLOID_POOL_SIZE/5,
+        npilot=N_PILOT,
     output:
         covariate = "results/{sample}_baypassSplitOut_contrast/contrast_{i}_covariate.std",
         dic = "results/{sample}_baypassSplitOut_contrast/contrast_{i}_DIC.out",
