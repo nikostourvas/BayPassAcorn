@@ -1,7 +1,0 @@
-Building DAG of jobs...
-MissingInputException in rule run_baypass in file /var/home/nikos/R_projects/BayPassAcorn/Snakefile, line 86:
-Missing input files for rule run_baypass:
-    output: results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_1_DIC.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_1_mat_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_1_summary_beta_params.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_1_summary_lda_omega.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_1_summary_pi_xtx.out, results/ACORN_VCF_Qrob_test_baypassSplitOut/chunk_1_summary_yij_pij.out
-    wildcards: sample=ACORN_VCF_Qrob_test, chunk=1
-    affected files:
-        results/ACORN_VCF_Qrob_test_chunks/chunk_1

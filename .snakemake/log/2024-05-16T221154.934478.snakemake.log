@@ -1,5 +1,0 @@
-Building DAG of jobs...
-MissingInputException in rule all in file /var/home/nikos/R_projects/BayPassAcorn/Snakefile, line 13:
-Missing input files for rule all:
-    affected files:
-        results/ACORN_VCF_Qrobur_minCov20IndelFilteredSNPs_Biallelic_miss0.1_ADP104_Subsampled_0.01_chunk

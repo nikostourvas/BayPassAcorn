@@ -1,7 +1,0 @@
-Building DAG of jobs...
-MissingInputException in rule vcf2counts in file /var/home/nikos/R_projects/BayPassAcorn/Snakefile, line 23:
-Missing input files for rule vcf2counts:
-    output: results/{sample}_counts.txt
-    wildcards: sample={sample}
-    affected files:
-        data/{sample}.vcf
