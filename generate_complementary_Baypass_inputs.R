@@ -10,7 +10,7 @@ datasets = gsub("_poolnames", "", datasets)
 generate_complementary_Baypass_inputs = function(x) {
   # Load complementary data
   pops = read.table(paste0("data/", x, "_poolnames"), header = FALSE)
-  ecotype = read.csv("data/20240729_ACORN_dem_TOPO_by_POP_nikos.csv", header = TRUE)
+  envfactors = read.csv("data/20240729_ACORN_dem_TOPO_by_POP_nikos.csv", header = TRUE)
   poolsizes = read.csv("data/20240307_poolsizes_per_pop.csv", header = TRUE)
   
   # Filter the rows of the 'poolsizes' file that correspond to the populations in the vector 'pops'. Pops are labeled as 'Plot_ID' in the poolsizes file
@@ -23,17 +23,26 @@ generate_complementary_Baypass_inputs = function(x) {
   write(poolsizes_sub$poolsize, paste0("data/", x, "_poolsizes"), 
               sep = " ", ncolumns=length(poolsizes_sub$poolsize))
   
-  # Filter the rows of the 'ecotype' file that correspond to the populations in the vector 'pops'. Pops are labeled as 'Plot_ID' in the ecotype file
+  # Filter the rows of the 'envfactors' file that correspond to the populations in the vector 'pops'. Pops are labeled as 'Plot_ID' in the envfactors file
   # Also remove columns Plot_ID and Pair_ID
-  ecotype_sub = ecotype %>% 
+  envfactors_sub = envfactors %>% 
     filter(Plot_ID %in% pops) %>% 
-    select(-c("Plot_ID", "Pair_ID")) %>% 
+    select(-c("Plot_ID", "Pair_ID", "Site_description")) %>% 
     t()
-
   # Write the filtered climate/topographic data to a new file.
-  write.table(ecotype_sub, paste0("data/", x, "_ecotype"), sep = " ", 
+  write.table(envfactors_sub, paste0("data/", x, "_efile"), sep = " ", 
+              col.names=FALSE, row.names=FALSE, quote=FALSE)
+  
+  # Create the ecotype (contrast) file
+  envfactors_sub = envfactors %>% 
+    filter(Plot_ID %in% pops) %>% 
+    select(c("Site_description")) %>% 
+    t()
+  # Write the filtered ecotype data to a new file.
+  write.table(envfactors_sub, paste0("data/", x, "_ecotype"), sep = " ", 
               col.names=FALSE, row.names=FALSE, quote=FALSE)
 }
 
 # Apply the function to all datasets
 lapply(datasets, generate_complementary_Baypass_inputs)
+
