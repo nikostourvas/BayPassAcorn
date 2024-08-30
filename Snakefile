@@ -3,7 +3,7 @@
 configfile: "config.yaml"
 
 #Define the software container
-singularity: "/home/geneticsShare/container_images/poolseq_tools_0.2.12.sif" # this path is on my system, you need to change it to your path
+singularity: "/mnt/forgenet_a/container_images/poolseq_tools_0.2.10.sif" # this path is on my system, you need to change it to your path
 
 # Get list of sample names
 with open("data/sample_list.txt") as f:
@@ -12,19 +12,23 @@ with open("data/sample_list.txt") as f:
 # Define number of subs for splitting the baypass input file
 N_SUBS=300
 MIN_HAPLOID_POOL_SIZE=15
-N_PILOT=20 # see model details below
+N_PILOT=100 # see model details below
 
 rule all:
     input:
-        expand("results/{sample}_concatenated_res_covariate.csv", sample=SAMPLES),
-        expand("results/{sample}_concatenated_res_contrast.csv", sample=SAMPLES),
         expand("results/{sample}_baypassSplitOut_core/core_{i}_mat_omega.out", sample=SAMPLES,
             i=range(1,4)),
         expand("results/{sample}_omega_comp.pdf", sample=SAMPLES),
         expand("results/{sample}_omega_comp.csv", sample=SAMPLES),
+        expand("results/{sample}_baypassSplitOut_covariate/covariate_{i}_summary_betai_reg.out", 
+            sample=SAMPLES, i=range(1,301)),
         expand("results/{sample}_std_IS_model_diagnostics.pdf", sample=SAMPLES),
-        expand("results/{sample}_C2_model_diagnostics.pdf", sample=SAMPLES),
         expand("results/{sample}_xtxst_pvalue_dist.pdf", sample=SAMPLES)
+    threads: 1
+    resources:
+        runtime=10,
+        mem_mb=1000,
+        slurm_partition="testing"
 
 rule vcf2genobaypass:
     input:
@@ -34,6 +38,11 @@ rule vcf2genobaypass:
         poolnames="data/{sample}_poolnames",
         prefix="{sample}",
         subs=N_SUBS,
+    threads: 1
+    resources:
+        runtime=90,
+        mem_mb=24000,
+        slurm_partition="batch"
     output:
         genobaypass=["results/subsets/{{sample}}.genobaypass.sub{}".format(i) for i in range(1, N_SUBS+1)],
         snpdet=["results/subsets/{{sample}}.snpdet.sub{}".format(i) for i in range(1, N_SUBS+1)]
@@ -61,6 +70,11 @@ rule run_baypass_core:
         npop=lambda wildcards: config['samples'][wildcards.sample]['npop'],
         d0yij=MIN_HAPLOID_POOL_SIZE/5,
         npilot=N_PILOT,
+    threads: 1
+    resources:
+        runtime=1440,
+        mem_mb=1000,
+        slurm_partition="batch"
     output:
         mat_omega = protected("results/{sample}_baypassSplitOut_core/core_{i}_mat_omega.out"),
         summary_lda_omega = protected("results/{sample}_baypassSplitOut_core/core_{i}_summary_lda_omega.out"),
@@ -80,6 +94,11 @@ rule compare_omega:
         omega2="results/{sample}_baypassSplitOut_core/core_2_mat_omega.out",
         omega3="results/{sample}_baypassSplitOut_core/core_3_mat_omega.out",
         xtx_summary="results/{sample}_baypassSplitOut_core/core_1_summary_pi_xtx.out"
+    threads: 1
+    resources:
+        runtime=30,
+        mem_mb=2000,
+        slurm_partition="batch"
     output:
         omega_comp="results/{sample}_omega_comp.pdf",
         omega_comp_table="results/{sample}_omega_comp.csv",
@@ -98,6 +117,11 @@ rule run_baypass_covariate:
         efile="data/{sample}_efile",
         d0yij=MIN_HAPLOID_POOL_SIZE/5,
         npilot=N_PILOT,
+    threads: 1
+    resources:
+        runtime=12960,
+        mem_mb=2000,
+        slurm_partition="htc"
     output:
         protected("results/{sample}_baypassSplitOut_covariate/covariate_{i}_covariate.std"),
         protected("results/{sample}_baypassSplitOut_covariate/covariate_{i}_DIC.out"),
@@ -116,6 +140,18 @@ rule run_baypass_covariate:
         -outprefix results/{wildcards.sample}_baypassSplitOut_covariate/covariate_{wildcards.i}
         """
 
+rule baypass_covariate_diagnostics:
+    input:
+        summary_betai_reg = "results/{sample}_baypassSplitOut_covariate/covariate_1_summary_betai_reg.out",
+    threads: 1
+    resources:
+        runtime=90,
+        mem_mb=8000,
+        slurm_partition="batch"
+    output:
+        diagnostics_is = "results/{sample}_std_IS_model_diagnostics.pdf",
+    script: "model_diagnostics_covariate.R"
+
 ## Option 3. Running contrast analysis estimating C2 statistic: 
 ## population ecotype is a binary trait (dry = -1; moist = 1)
 rule run_baypass_C2:
@@ -129,6 +165,11 @@ rule run_baypass_C2:
         ecotype="data/{sample}_ecotype",
         d0yij=MIN_HAPLOID_POOL_SIZE/5,
         npilot=N_PILOT,
+    threads: 1
+    resources:
+        runtime=2880,
+        mem_mb=1000,
+        slurm_partition="htc"
     output:
         protected("results/{sample}_baypassSplitOut_contrast/contrast_{i}_covariate.std"),
         protected("results/{sample}_baypassSplitOut_contrast/contrast_{i}_DIC.out"),
@@ -148,16 +189,19 @@ rule run_baypass_C2:
         -outprefix results/{wildcards.sample}_baypassSplitOut_contrast/contrast_{wildcards.i}
         """
 
-rule model_diagnostics:
+rule c2_diagnostics:
     input:
-        summary_betai_reg = "results/{sample}_baypassSplitOut_contrast/contrast_1_summary_betai_reg.out",
         summary_contrast = "results/{sample}_baypassSplitOut_contrast/contrast_1_summary_contrast.out",
     params:
         ecotype="data/ecotype",
+    threads: 1
+    resources:
+        runtime=30,
+        mem_mb=8000,
+        slurm_partition="batch"
     output:
-        diagnostics_is = "results/{sample}_std_IS_model_diagnostics.pdf",
         diagnostics_c2 = "results/{sample}_C2_model_diagnostics.pdf",
-    script: "model_diagnostics.R"
+    script: "model_diagnostics_c2.R"
 
 rule concatenate_results:
     input:
@@ -169,7 +213,12 @@ rule concatenate_results:
         prefixcovariate = "results/{sample}_baypassSplitOut_covariate/covariate",
         prefixcontrast = "results/{sample}_baypassSplitOut_contrast/contrast",
         subs=N_SUBS,
-        snpdetprefix = "results/subsets/{sample}.snpdet.sub"        
+        snpdetprefix = "results/subsets/{sample}.snpdet.sub"
+    threads: 1
+    resources:
+        runtime=30,
+        mem_mb=8000,
+        slurm_partition="batch"        
     output:
         covariateresults = "results/{sample}_concatenated_res_covariate.csv",
         contrasttable = "results/{sample}_concatenated_res_contrast.csv"
