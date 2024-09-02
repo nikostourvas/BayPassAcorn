@@ -8,3 +8,5 @@
 /results (copy)
 /results (thinning)
 .snakemake/
+.vscode/
+
