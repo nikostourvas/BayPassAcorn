@@ -15,10 +15,10 @@
 # associated with the population ecotype rather than relying on the 
 # (parametric) models used to estimate Bayes Factor.
 ecotype.bf=snp.res$BF.dB. 
-ecotype.C2=read.table(snakemake@input[[2]],h=T) 
+ecotype.C2=read.table(snakemake@input[[1]],h=T) 
 
 #check the behavior of the p-values associated to the C2 
-pdf(snakemake@output[[2]],width=10,height=10)
+pdf(snakemake@output[[1]],width=10,height=10)
 hist(10**(-1*ecotype.C2$log10.1.pval.),freq=F,breaks=50) 
 abline(h=1) 
 plot(ecotype.bf,ecotype.C2$log10.1.pval., 

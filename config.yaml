@@ -13,3 +13,7 @@ samples:
     npop: 40
   ACORN_Qpet_1EA:
     npop: 12
+  ACORN_Qpet_1EA_MinDP20_MaxMeanDP185_Miss0075_MAF005_HDplot:
+    npop: 12
+  ACORN_Qpet_1CA_MinDP20_MaxMeanDP178_Miss0075_MAF005_HDplot:
+    npop: 20
