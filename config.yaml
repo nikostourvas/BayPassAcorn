@@ -27,3 +27,5 @@ samples:
     npop: 17
   ACORN_Qpub_2EP_MinDP20_MaxMeanDP175_Miss0075_MAF005_HDplot:
     npop: 16
+  ACORN_Qpub_2CA_MinDP20_MaxMeanDP165_Miss0075_MAF005_HDplot:
+    npop: 19
