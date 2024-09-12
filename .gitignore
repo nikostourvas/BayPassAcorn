@@ -3,10 +3,11 @@
 /dag.png
 /data
 /logs
-/results
-/results (another copy)
-/results (copy)
-/results (thinning)
+/results*
+/Data
 .snakemake/
 .vscode/
+*.Rproj
+.Rproj.user
+.Rhistory
 
