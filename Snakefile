@@ -3,39 +3,56 @@
 configfile: "config.yaml"
 
 #Define the software container
-singularity: "/mnt/forgenet_a/container_images/poolseq_tools_0.2.10.sif" # this path is on my system, you need to change it to your path
+singularity: config["singularity"]
 
 # Get list of sample names
-with open("data/sample_list.txt") as f:
-     SAMPLES = f.read().splitlines()
+SAMPLES = config["samples"]
 
 # Define number of subs for splitting the baypass input file
-N_SUBS=300
+N_SUBS=6
+# Define number of replicates for the core model
+N_CORE_REPLICATES=3
+# Define the minimum haploid pool size
 MIN_HAPLOID_POOL_SIZE=15
 N_PILOT=100 # see model details below
 
 rule all:
     input:
         expand("results/{sample}_baypassSplitOut_core/core_{i}_mat_omega.out", sample=SAMPLES,
-            i=range(1,4)),
+            i=range(1, N_CORE_REPLICATES+1)),
         expand("results/{sample}_omega_comp.pdf", sample=SAMPLES),
         expand("results/{sample}_omega_comp.csv", sample=SAMPLES),
         expand("results/{sample}_baypassSplitOut_covariate/covariate_{i}_summary_betai_reg.out", 
-            sample=SAMPLES, i=range(1,301)),
+            sample=SAMPLES, i=range(1, N_SUBS+1)),
         expand("results/{sample}_std_IS_model_diagnostics.pdf", sample=SAMPLES),
-        expand("results/{sample}_xtxst_pvalue_dist.pdf", sample=SAMPLES)
+        expand("results/{sample}_xtxst_pvalue_dist.pdf", sample=SAMPLES),
+        expand("results/{sample}_concatenated_res_covariate.csv", sample=SAMPLES),
     threads: 1
     resources:
         runtime=10,
         mem_mb=1000,
         slurm_partition="testing"
 
+rule generate_complementary_inputs:
+    input:
+        envfactors="data/20240805_ACORN_dem_TOPO_by_POP_NT.csv",
+        poolsizes="data/20240307_poolsizes_per_pop.csv",
+    resources:
+        runtime=5,
+        mem_mb=1000,
+        slurm_partition="batch"
+    output:
+        poolsizes="data/{sample}_poolsizes",
+        efile="data/{sample}_efile",
+        ecotype="data/{sample}_ecotype",
+    script: "generate_complementary_inputs.R"
+
 rule vcf2genobaypass:
     input:
-        vcf="data/{sample}.vcf"
-    params:
+        vcf="data/{sample}.vcf",
         poolsizes="data/{sample}_poolsizes",
         poolnames="data/{sample}_poolnames",
+    params:
         prefix="{sample}",
         subs=N_SUBS,
     threads: 1
@@ -67,7 +84,7 @@ rule run_baypass_core:
     params:
         threads=1,
         poolsizefile="data/{sample}_poolsizes",
-        npop=lambda wildcards: config['samples'][wildcards.sample]['npop'],
+        npop=lambda wildcards: config['sample_metadata'][wildcards.sample]['npop'],
         d0yij=MIN_HAPLOID_POOL_SIZE/5,
         npilot=N_PILOT,
     threads: 1
@@ -113,7 +130,7 @@ rule run_baypass_covariate:
     params:
         threads=1,
         poolsizefile="data/{sample}_poolsizes",
-        npop=lambda wildcards: config['samples'][wildcards.sample]['npop'],
+        npop=lambda wildcards: config['sample_metadata'][wildcards.sample]['npop'],
         efile="data/{sample}_efile",
         d0yij=MIN_HAPLOID_POOL_SIZE/5,
         npilot=N_PILOT,
@@ -161,7 +178,7 @@ rule run_baypass_C2:
     params:
         threads=1,
         poolsizefile="data/{sample}_poolsizes",
-        npop=lambda wildcards: config['samples'][wildcards.sample]['npop'],
+        npop=lambda wildcards: config['sample_metadata'][wildcards.sample]['npop'],
         ecotype="data/{sample}_ecotype",
         d0yij=MIN_HAPLOID_POOL_SIZE/5,
         npilot=N_PILOT,
@@ -203,17 +220,15 @@ rule c2_diagnostics:
         diagnostics_c2 = "results/{sample}_C2_model_diagnostics.pdf",
     script: "model_diagnostics_c2.R"
 
-rule concatenate_results:
+rule concatenate_results_covariate:
     input:
         covariate = expand("results/{{sample}}_baypassSplitOut_covariate/covariate_{i}_summary_betai_reg.out", 
         i=range(1, N_SUBS+1)),
-        contrast = expand("results/{{sample}}_baypassSplitOut_contrast/contrast_{i}_summary_betai_reg.out", 
-        i=range(1, N_SUBS+1))
     params:
         prefixcovariate = "results/{sample}_baypassSplitOut_covariate/covariate",
-        prefixcontrast = "results/{sample}_baypassSplitOut_contrast/contrast",
         subs=N_SUBS,
-        snpdetprefix = "results/subsets/{sample}.snpdet.sub"
+        snpdetprefix = "results/subsets/{sample}.snpdet.sub",
+        retrieve_c2= False
     threads: 1
     resources:
         runtime=30,
@@ -221,5 +236,22 @@ rule concatenate_results:
         slurm_partition="batch"        
     output:
         covariateresults = "results/{sample}_concatenated_res_covariate.csv",
+    script: "concatenate_res.R"
+
+rule concatenate_results_c2:
+    input:
+        contrast = expand("results/{{sample}}_baypassSplitOut_contrast/contrast_{i}_summary_betai_reg.out", 
+         i=range(1, N_SUBS+1))
+    params:
+        prefixcontrast = "results/{sample}_baypassSplitOut_contrast/contrast",
+        subs=N_SUBS,
+        snpdetprefix = "results/subsets/{sample}.snpdet.sub",
+        retrieve_c2= True
+    threads: 1
+    resources:
+        runtime=30,
+        mem_mb=8000,
+        slurm_partition="batch"        
+    output:
         contrasttable = "results/{sample}_concatenated_res_contrast.csv"
     script: "concatenate_res.R"
