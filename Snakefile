@@ -51,7 +51,7 @@ rule generate_complementary_inputs:
         poolsizes="data/{sample}_poolsizes",
         efile="data/{sample}_efile",
         ecotype="data/{sample}_ecotype",
-    script: "generate_complementary_inputs.R"
+    script: "scripts/generate_complementary_inputs.R"
 
 rule vcf2genobaypass:
     input:
@@ -68,7 +68,7 @@ rule vcf2genobaypass:
     output:
         genobaypass=["results/subsets/{{sample}}.genobaypass.sub{}".format(i) for i in range(1, N_SUBS+1)],
         snpdet=["results/subsets/{{sample}}.snpdet.sub{}".format(i) for i in range(1, N_SUBS+1)]
-    script: "poolfstat_subsample.R"
+    script: "scripts/poolfstat_subsample.R"
 
 #########################################
 ## Detecting outlier loci with baypass ##
@@ -123,7 +123,7 @@ rule compare_omega:
         omega_comp="results/{sample}_omega_comp.pdf",
         omega_comp_table="results/{sample}_omega_comp.csv",
         xtxst_pvalue_dist="results/{sample}_xtxst_pvalue_dist.pdf"
-    script: "compare_omega.R"
+    script: "scripts/compare_omega.R"
 
 ## Option 2. Identifying SNPs associated with population covariate data
 rule run_baypass_covariate:
@@ -168,7 +168,7 @@ rule baypass_covariate_diagnostics:
         slurm_partition=RESOURCES["baypass_covariate_diagnostics"]["slurm_partition"]
     output:
         diagnostics_is = "results/{sample}_std_IS_model_diagnostics.pdf",
-    script: "model_diagnostics_covariate.R"
+    script: "scripts/model_diagnostics_covariate.R"
 
 ## Option 3. Running contrast analysis estimating C2 statistic: 
 ## population ecotype is a binary trait (dry = -1; moist = 1)
@@ -217,7 +217,7 @@ rule c2_diagnostics:
         slurm_partition=RESOURCES["c2_diagnostics"]["slurm_partition"]
     output:
         diagnostics_c2 = "results/{sample}_C2_model_diagnostics.pdf",
-    script: "model_diagnostics_c2.R"
+    script: "scripts/model_diagnostics_c2.R"
 
 rule concatenate_results_covariate:
     input:
@@ -234,7 +234,7 @@ rule concatenate_results_covariate:
         slurm_partition=RESOURCES["concatenate_results_covariate"]["slurm_partition"]       
     output:
         covariateresults = "results/{sample}_concatenated_res_covariate.csv",
-    script: "concatenate_res.R"
+    script: "scripts/concatenate_res.R"
 
 rule concatenate_results_c2:
     input:
@@ -251,4 +251,4 @@ rule concatenate_results_c2:
         slurm_partition=RESOURCES["concatenate_results_c2"]["slurm_partition"]       
     output:
         contrasttable = "results/{sample}_concatenated_res_contrast.csv"
-    script: "concatenate_res.R"
+    script: "scripts/concatenate_res.R"
