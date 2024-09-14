@@ -1,4 +1,4 @@
-source("baypass_utils.R")
+source("scripts/baypass_utils.R")
 
 all.res = concatenate_res(
                         anaprefix = snakemake@params[[1]],

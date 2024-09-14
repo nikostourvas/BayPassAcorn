@@ -1,5 +1,5 @@
 # source baypass utils functions
-source("baypass_utils.R")
+source("scripts/baypass_utils.R")
 
 #Compare the estimates of Omega obtained with different subsets of SNPs
 omega1 <- as.matrix(read.table(snakemake@input[[1]]))
