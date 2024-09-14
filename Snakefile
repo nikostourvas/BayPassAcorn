@@ -1,20 +1,27 @@
 # Snakefile
 
+# Configuration file that lists samples and metadata
+# That is the file you should edit prior to analysis
 configfile: "config.yaml"
 
-#Define the software container
+# Get the software container from config file
 singularity: config["singularity"]
 
-# Get list of sample names
+# Get list of sample names from config file
 SAMPLES = config["samples"]
 
-# Define number of subs for splitting the baypass input file
-N_SUBS=6
-# Define number of replicates for the core model
-N_CORE_REPLICATES=3
-# Define the minimum haploid pool size
-MIN_HAPLOID_POOL_SIZE=15
-N_PILOT=100 # see model details below
+# Get input file names from config file
+ENVFACTORS = config["input_files"]["envfactors"]
+POOLSIZES = config["input_files"]["poolsizes"]
+
+# Get parameters from config file
+N_SUBS = config["parameters"]["n_subs"]
+N_CORE_REPLICATES = config["parameters"]["n_core_replicates"]
+MIN_HAPLOID_POOL_SIZE = config["parameters"]["min_haploid_pool_size"]
+N_PILOT = config["parameters"]["n_pilot"]
+
+# Get resources from config file
+RESOURCES = config["resources"]
 
 rule all:
     input:
@@ -27,20 +34,19 @@ rule all:
         expand("results/{sample}_std_IS_model_diagnostics.pdf", sample=SAMPLES),
         expand("results/{sample}_xtxst_pvalue_dist.pdf", sample=SAMPLES),
         expand("results/{sample}_concatenated_res_covariate.csv", sample=SAMPLES),
-    threads: 1
     resources:
-        runtime=10,
-        mem_mb=1000,
-        slurm_partition="testing"
+        runtime=RESOURCES["all"]["runtime"],
+        mem_mb=RESOURCES["all"]["mem_mb"],
+        slurm_partition=RESOURCES["all"]["slurm_partition"]
 
 rule generate_complementary_inputs:
     input:
-        envfactors="data/20240805_ACORN_dem_TOPO_by_POP_NT.csv",
-        poolsizes="data/20240307_poolsizes_per_pop.csv",
+        envfactors=ENVFACTORS,
+        poolsizes=POOLSIZES,
     resources:
-        runtime=5,
-        mem_mb=1000,
-        slurm_partition="batch"
+        runtime=RESOURCES["generate_complementary_inputs"]["runtime"],
+        mem_mb=RESOURCES["generate_complementary_inputs"]["mem_mb"],
+        slurm_partition=RESOURCES["generate_complementary_inputs"]["slurm_partition"]
     output:
         poolsizes="data/{sample}_poolsizes",
         efile="data/{sample}_efile",
@@ -55,11 +61,10 @@ rule vcf2genobaypass:
     params:
         prefix="{sample}",
         subs=N_SUBS,
-    threads: 1
     resources:
-        runtime=90,
-        mem_mb=24000,
-        slurm_partition="batch"
+        runtime=RESOURCES["vcf2genobaypass"]["runtime"],
+        mem_mb=RESOURCES["vcf2genobaypass"]["mem_mb"],
+        slurm_partition=RESOURCES["vcf2genobaypass"]["slurm_partition"]
     output:
         genobaypass=["results/subsets/{{sample}}.genobaypass.sub{}".format(i) for i in range(1, N_SUBS+1)],
         snpdet=["results/subsets/{{sample}}.snpdet.sub{}".format(i) for i in range(1, N_SUBS+1)]
@@ -87,11 +92,10 @@ rule run_baypass_core:
         npop=lambda wildcards: config['sample_metadata'][wildcards.sample]['npop'],
         d0yij=MIN_HAPLOID_POOL_SIZE/5,
         npilot=N_PILOT,
-    threads: 1
     resources:
-        runtime=1440,
-        mem_mb=1000,
-        slurm_partition="batch"
+        runtime=RESOURCES["run_baypass_core"]["runtime"],
+        mem_mb=RESOURCES["run_baypass_core"]["mem_mb"],
+        slurm_partition=RESOURCES["run_baypass_core"]["slurm_partition"]
     output:
         mat_omega = protected("results/{sample}_baypassSplitOut_core/core_{i}_mat_omega.out"),
         summary_lda_omega = protected("results/{sample}_baypassSplitOut_core/core_{i}_summary_lda_omega.out"),
@@ -111,11 +115,10 @@ rule compare_omega:
         omega2="results/{sample}_baypassSplitOut_core/core_2_mat_omega.out",
         omega3="results/{sample}_baypassSplitOut_core/core_3_mat_omega.out",
         xtx_summary="results/{sample}_baypassSplitOut_core/core_1_summary_pi_xtx.out"
-    threads: 1
     resources:
-        runtime=30,
-        mem_mb=2000,
-        slurm_partition="batch"
+        runtime=RESOURCES["compare_omega"]["runtime"],
+        mem_mb=RESOURCES["compare_omega"]["mem_mb"],
+        slurm_partition=RESOURCES["compare_omega"]["slurm_partition"]
     output:
         omega_comp="results/{sample}_omega_comp.pdf",
         omega_comp_table="results/{sample}_omega_comp.csv",
@@ -134,11 +137,10 @@ rule run_baypass_covariate:
         efile="data/{sample}_efile",
         d0yij=MIN_HAPLOID_POOL_SIZE/5,
         npilot=N_PILOT,
-    threads: 1
     resources:
-        runtime=12960,
-        mem_mb=2000,
-        slurm_partition="htc"
+        runtime=RESOURCES["run_baypass_covariate"]["runtime"],
+        mem_mb=RESOURCES["run_baypass_covariate"]["mem_mb"],
+        slurm_partition=RESOURCES["run_baypass_covariate"]["slurm_partition"]
     output:
         protected("results/{sample}_baypassSplitOut_covariate/covariate_{i}_covariate.std"),
         protected("results/{sample}_baypassSplitOut_covariate/covariate_{i}_DIC.out"),
@@ -160,18 +162,17 @@ rule run_baypass_covariate:
 rule baypass_covariate_diagnostics:
     input:
         summary_betai_reg = "results/{sample}_baypassSplitOut_covariate/covariate_1_summary_betai_reg.out",
-    threads: 1
     resources:
-        runtime=90,
-        mem_mb=8000,
-        slurm_partition="batch"
+        runtime=RESOURCES["baypass_covariate_diagnostics"]["runtime"],
+        mem_mb=RESOURCES["baypass_covariate_diagnostics"]["mem_mb"],
+        slurm_partition=RESOURCES["baypass_covariate_diagnostics"]["slurm_partition"]
     output:
         diagnostics_is = "results/{sample}_std_IS_model_diagnostics.pdf",
     script: "model_diagnostics_covariate.R"
 
 ## Option 3. Running contrast analysis estimating C2 statistic: 
 ## population ecotype is a binary trait (dry = -1; moist = 1)
-rule run_baypass_C2:
+rule run_baypass_c2:
     input:
         sub="results/subsets/{sample}.genobaypass.sub{i}",
         omegafile="results/{sample}_baypassSplitOut_core/core_1_mat_omega.out",
@@ -182,11 +183,10 @@ rule run_baypass_C2:
         ecotype="data/{sample}_ecotype",
         d0yij=MIN_HAPLOID_POOL_SIZE/5,
         npilot=N_PILOT,
-    threads: 1
     resources:
-        runtime=2880,
-        mem_mb=1000,
-        slurm_partition="htc"
+        runtime=RESOURCES["run_baypass_c2"]["runtime"],
+        mem_mb=RESOURCES["run_baypass_c2"]["mem_mb"],
+        slurm_partition=RESOURCES["run_baypass_c2"]["slurm_partition"]
     output:
         protected("results/{sample}_baypassSplitOut_contrast/contrast_{i}_covariate.std"),
         protected("results/{sample}_baypassSplitOut_contrast/contrast_{i}_DIC.out"),
@@ -211,11 +211,10 @@ rule c2_diagnostics:
         summary_contrast = "results/{sample}_baypassSplitOut_contrast/contrast_1_summary_contrast.out",
     params:
         ecotype="data/ecotype",
-    threads: 1
     resources:
-        runtime=30,
-        mem_mb=8000,
-        slurm_partition="batch"
+        runtime=RESOURCES["c2_diagnostics"]["runtime"],
+        mem_mb=RESOURCES["c2_diagnostics"]["mem_mb"],
+        slurm_partition=RESOURCES["c2_diagnostics"]["slurm_partition"]
     output:
         diagnostics_c2 = "results/{sample}_C2_model_diagnostics.pdf",
     script: "model_diagnostics_c2.R"
@@ -229,11 +228,10 @@ rule concatenate_results_covariate:
         subs=N_SUBS,
         snpdetprefix = "results/subsets/{sample}.snpdet.sub",
         retrieve_c2= False
-    threads: 1
     resources:
-        runtime=30,
-        mem_mb=8000,
-        slurm_partition="batch"        
+        runtime=RESOURCES["concatenate_results_covariate"]["runtime"],
+        mem_mb=RESOURCES["concatenate_results_covariate"]["mem_mb"],
+        slurm_partition=RESOURCES["concatenate_results_covariate"]["slurm_partition"]       
     output:
         covariateresults = "results/{sample}_concatenated_res_covariate.csv",
     script: "concatenate_res.R"
@@ -247,11 +245,10 @@ rule concatenate_results_c2:
         subs=N_SUBS,
         snpdetprefix = "results/subsets/{sample}.snpdet.sub",
         retrieve_c2= True
-    threads: 1
     resources:
-        runtime=30,
-        mem_mb=8000,
-        slurm_partition="batch"        
+        runtime=RESOURCES["concatenate_results_c2"]["runtime"],
+        mem_mb=RESOURCES["concatenate_results_c2"]["mem_mb"],
+        slurm_partition=RESOURCES["concatenate_results_c2"]["slurm_partition"]       
     output:
         contrasttable = "results/{sample}_concatenated_res_contrast.csv"
     script: "concatenate_res.R"
