@@ -1,7 +1,7 @@
 singularity: "/home/nikos/other_apps/bin/poolseq_tools_0.2.11.sif"
 
 samples:
-  ACORN_Qpet_1EA
+  - ACORN_Qpet_1EA
 
 sample_metadata:
   ACORN_Qrob_3GA_MinDP20_MaxMeanDP188_Miss0075_MAF005_HDplot:
