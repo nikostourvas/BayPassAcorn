@@ -1,7 +1,7 @@
 # STD IS model diagnostics
 snp.res=read.table(snakemake@input[[1]],h=T) 
 
-pdf(snakemake@output[[1]],width=10,height=10)
+png(snakemake@output[[1]],width=10,height=10, units="in", res=300)
 layout(matrix(1:3,3,1)) 
 plot(snp.res$BF.dB.,xlab="SNP",ylab="BFis (in dB)") 
 plot(snp.res$eBPis,xlab="SNP",ylab="eBPis") 

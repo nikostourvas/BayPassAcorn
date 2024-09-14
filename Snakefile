@@ -1,6 +1,6 @@
 # Snakefile
 
-# Configuration file that lists samples and metadata
+# Define configuration file that lists samples and metadata
 # That is the file you should edit prior to analysis
 configfile: "config.yaml"
 
@@ -31,9 +31,11 @@ rule all:
         expand("results/{sample}_omega_comp.csv", sample=SAMPLES),
         expand("results/{sample}_baypassSplitOut_covariate/covariate_{i}_summary_betai_reg.out", 
             sample=SAMPLES, i=range(1, N_SUBS+1)),
-        expand("results/{sample}_std_IS_model_diagnostics.pdf", sample=SAMPLES),
+        expand("results/{sample}_std_IS_model_diagnostics.png", sample=SAMPLES),
+        expand("results/{sample}_C2_model_diagnostics.pdf", sample=SAMPLES),
         expand("results/{sample}_xtxst_pvalue_dist.pdf", sample=SAMPLES),
         expand("results/{sample}_concatenated_res_covariate.csv", sample=SAMPLES),
+        expand("results/{sample}_concatenated_res_contrast.csv", sample=SAMPLES)
     resources:
         runtime=RESOURCES["all"]["runtime"],
         mem_mb=RESOURCES["all"]["mem_mb"],
@@ -167,7 +169,7 @@ rule baypass_covariate_diagnostics:
         mem_mb=RESOURCES["baypass_covariate_diagnostics"]["mem_mb"],
         slurm_partition=RESOURCES["baypass_covariate_diagnostics"]["slurm_partition"]
     output:
-        diagnostics_is = "results/{sample}_std_IS_model_diagnostics.pdf",
+        diagnostics_is = "results/{sample}_std_IS_model_diagnostics.png",
     script: "scripts/model_diagnostics_covariate.R"
 
 ## Option 3. Running contrast analysis estimating C2 statistic: 
@@ -208,6 +210,7 @@ rule run_baypass_c2:
 
 rule c2_diagnostics:
     input:
+        summary_betai_reg = "results/{sample}_baypassSplitOut_contrast/contrast_1_summary_betai_reg.out",
         summary_contrast = "results/{sample}_baypassSplitOut_contrast/contrast_1_summary_contrast.out",
     params:
         ecotype="data/ecotype",

@@ -24,15 +24,36 @@ write.table(data.frame(d12=d12, d13=d13, d23=d23),
             snakemake@output[[2]],
             sep=",", row.names=FALSE, quote=FALSE)
 
+# Estimates of the XtX differentiation measures (using the calibrated XtXst estimator)
+snp.res = read.table(snakemake@input[[4]], h = TRUE)
 
-#Estimates of the XtX differentiation measures (using the calibrated XtXst estimator) 
-snp.res=read.table(snakemake@input[[4]],h=T) 
-#check behavior of the p-values associated to the XtXst estimator 
-pdf(snakemake@output[[3]],width=10,height=10)
-hist(10**(-1*snp.res$log10.1.pval.),freq=F,breaks=50) 
-abline(h=1) 
-layout(matrix(1:2,2,1)) 
-plot(snp.res$XtXst) 
-plot(snp.res$log10.1.pval.,ylab="XtX P-value (-log10 scale)") 
-abline(h=3,lty=2) #0.001 p--value theshold
+
+# Here we generate the raster graphics and embed them into the PDF in a single step
+# Generate the raster graphics
+png("temp_xtx_hist.png", width = 10, height = 10, units = "in", res = 300)
+hist(10**(-1 * snp.res$log10.1.pval.), freq = FALSE, breaks = 50)
+abline(h = 1)
 dev.off()
+
+png("temp_xtx_plots.png", width = 10, height = 10, units = "in", res = 300)
+layout(matrix(1:2, 2, 1))
+plot(snp.res$XtXst)
+plot(snp.res$log10.1.pval., ylab = "XtX P-value (-log10 scale)")
+abline(h = 3, lty = 2) # 0.001 p-value threshold
+dev.off()
+
+# Read the raster graphics back into R
+library(png)
+xtx_hist = readPNG("temp_xtx_hist.png")
+xtx_plots = readPNG("temp_xtx_plots.png")
+
+# Embed the raster graphics into the PDF
+pdf(snakemake@output[[3]], width = 10, height = 10)
+plot.new()
+rasterImage(xtx_hist, 0, 0, 1, 1)
+plot.new()
+rasterImage(xtx_plots, 0, 0, 1, 1)
+dev.off()
+
+# Clean up temporary files
+file.remove("temp_xtx_hist.png", "temp_xtx_plots.png")
