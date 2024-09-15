@@ -46,7 +46,7 @@ if (!snakemake@params[[4]]) {
     geom_point(alpha=1, size=0.8) +
     geom_point(data=all.res[all.res$BF.dB.>20,], aes(x=POS, y=BF.dB.), color="red", size=.8) +
     facet_grid(COVARIABLE~CHR, space = "free_x", scales = "free_x") +
-    scale_color_manual(values = rep(c("black", "grey"), 20)) +
+    scale_color_manual(values = rep(c("black", "grey"), 2000)) +
     theme_bw() +
     theme(legend.position = "none",
             axis.text.x=element_blank(),

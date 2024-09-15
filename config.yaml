@@ -60,8 +60,8 @@ resources:
     mem_mb: 8000
     slurm_partition: "batch"
   concatenate_results_covariate:
-    runtime: 120
-    mem_mb: 24000
+    runtime: 180
+    mem_mb: 36000
     slurm_partition: "batch"
   concatenate_results_c2:
     runtime: 120
