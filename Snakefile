@@ -23,6 +23,15 @@ N_PILOT = config["parameters"]["n_pilot"]
 # Get resources from config file
 RESOURCES = config["resources"]
 
+# function to calculate the number of populations
+import os
+
+def count_words_in_file(file_path):
+    with open(file_path, 'r') as file:
+        content = file.read()
+    return len(content.split())
+
+
 rule all:
     input:
         expand("results/{sample}_baypassSplitOut_core/core_{i}_mat_omega.out", sample=SAMPLES,
@@ -91,7 +100,7 @@ rule run_baypass_core:
     params:
         threads=1,
         poolsizefile="data/{sample}_poolsizes",
-        npop=lambda wildcards: config['sample_metadata'][wildcards.sample]['npop'],
+        npop=lambda wildcards: count_words_in_file(f"data/{wildcards.sample}_poolnames"),
         d0yij=MIN_HAPLOID_POOL_SIZE/5,
         npilot=N_PILOT,
     resources:
@@ -135,7 +144,7 @@ rule run_baypass_covariate:
     params:
         threads=1,
         poolsizefile="data/{sample}_poolsizes",
-        npop=lambda wildcards: config['sample_metadata'][wildcards.sample]['npop'],
+        npop=lambda wildcards: count_words_in_file(f"data/{wildcards.sample}_poolnames"),
         efile="data/{sample}_efile",
         d0yij=MIN_HAPLOID_POOL_SIZE/5,
         npilot=N_PILOT,
@@ -181,7 +190,7 @@ rule run_baypass_c2:
     params:
         threads=1,
         poolsizefile="data/{sample}_poolsizes",
-        npop=lambda wildcards: config['sample_metadata'][wildcards.sample]['npop'],
+        npop=lambda wildcards: count_words_in_file(f"data/{wildcards.sample}_poolnames"),
         ecotype="data/{sample}_ecotype",
         d0yij=MIN_HAPLOID_POOL_SIZE/5,
         npilot=N_PILOT,
