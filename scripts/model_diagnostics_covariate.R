@@ -9,26 +9,27 @@ library(ggplot2)
 snp.res$COVARIABLE = envfactor_names[snp.res$COVARIABLE,]
 
 # Manhattan plot of the Bayes factors
-snp.res$COVARIABLE = factor(snp.res$COVARIABLE, levels=unique(snp.res$COVARIABLE))
-ggplot(snp.res,aes(x=MRK,y=BF.dB.))+ 
+snp.res$COVARIABLE = factor(snp.res$COVARIABLE, levels = unique(snp.res$COVARIABLE))
+plot_bf = ggplot(snp.res, aes(x = MRK, y = BF.dB.)) + 
   geom_point() +
-  facet_wrap(~COVARIABLE, ncol=1) +
-  xlab("SNP")+ylab("BFis (in dB)")
-ggsave(snakemake@output[[1]],width=10,height=49, units="in", dpi=300)
+  geom_point(data = snp.res[snp.res$BF.dB. > 20, ], aes(x = MRK, y = BF.dB.), color = "red") + 
+  facet_wrap(~COVARIABLE, ncol = 1) +
+  xlab("SNP") + ylab("BFis (in dB)")
+ggsave(snakemake@output[[1]], plot = plot_bf, width = 10, height = 49, units = "in", dpi = 300)
 
 # Manhattan plot of the eBPis
-ggplot(snp.res,aes(x=MRK,y=eBPis))+
-    geom_point()+
-    facet_wrap(~COVARIABLE, ncol=1)+
-    xlab("SNP")+ylab("eBPis")
-ggsave(snakemake@output[[2]],width=10,height=49, units="in", dpi=300)
+plot_ebpis = ggplot(snp.res, aes(x = MRK, y = eBPis)) +
+    geom_point() +
+    facet_wrap(~COVARIABLE, ncol = 1) +
+    xlab("SNP") + ylab("eBPis")
+ggsave(snakemake@output[[2]], plot = plot_ebpis, width = 10, height = 49, units = "in", dpi = 300)
 
 # Manhattan plot of the Beta_is
-ggplot(snp.res,aes(x=MRK,y=Beta_is))+
-    geom_point()+
-    facet_wrap(~COVARIABLE, ncol=1)+
-    xlab("SNP")+ylab(expression(beta~"coefficient"))
-ggsave(snakemake@output[[3]],width=10,height=49, units="in", dpi=300)
+plot_beta_is = ggplot(snp.res, aes(x = MRK, y = Beta_is)) +
+    geom_point() +
+    facet_wrap(~COVARIABLE, ncol = 1) +
+    xlab("SNP") + ylab(expression(beta ~ "coefficient"))
+ggsave(snakemake@output[[3]], plot = plot_beta_is, width = 10, height = 49, units = "in", dpi = 300)
 
 
 # Genetic offset and RONA

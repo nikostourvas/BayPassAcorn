@@ -236,6 +236,7 @@ rule c2_diagnostics:
 
 rule concatenate_results_covariate:
     input:
+        envfactor_names = "data/{sample}_efile_envfactor_names",
         covariate = expand("results/{{sample}}_baypassSplitOut_covariate/covariate_{i}_summary_betai_reg.out", 
         i=range(1, N_SUBS+1)),
     params:
@@ -249,6 +250,7 @@ rule concatenate_results_covariate:
         slurm_partition=RESOURCES["concatenate_results_covariate"]["slurm_partition"]       
     output:
         covariateresults = "results/{sample}_concatenated_res_covariate.csv",
+        manhattanplot = "results/{sample}_manhattanplot_covariate.png"
     script: "scripts/concatenate_res.R"
 
 rule concatenate_results_c2:
