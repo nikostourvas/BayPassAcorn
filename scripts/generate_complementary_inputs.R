@@ -27,8 +27,15 @@ generate_complementary_Baypass_inputs = function(x) {
   envfactors_sub = envfactors %>% 
     filter(Plot_ID %in% pops) %>% 
     select(-c("Plot_ID", "Pair_ID", "Site_description",
-              "Latitude", "Longitude", "elevation")) %>% 
-    t()
+              "Latitude", "Longitude", "elevation")) 
+
+  # write the column names (envfactors) to a new file
+  write.table(colnames(envfactors_sub), paste0("data/", x, "_efile_envfactor_names"), sep = " ", 
+              col.names=FALSE, row.names=FALSE, quote=FALSE)
+
+  # Transpose the envfactors_sub dataframe
+  envfactors_sub = t(envfactors_sub)
+
   # Write the filtered climate/topographic data to a new file.
   write.table(envfactors_sub, paste0("data/", x, "_efile"), sep = " ", 
               col.names=FALSE, row.names=FALSE, quote=FALSE)

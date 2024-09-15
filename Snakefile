@@ -40,7 +40,7 @@ rule all:
         expand("results/{sample}_omega_comp.csv", sample=SAMPLES),
         expand("results/{sample}_baypassSplitOut_covariate/covariate_{i}_summary_betai_reg.out", 
             sample=SAMPLES, i=range(1, N_SUBS+1)),
-        expand("results/{sample}_std_IS_model_diagnostics.png", sample=SAMPLES),
+        expand("results/{sample}_std_IS_model_BFis.png", sample=SAMPLES),
         expand("results/{sample}_C2_model_diagnostics.pdf", sample=SAMPLES),
         expand("results/{sample}_xtxst_pvalue_dist.pdf", sample=SAMPLES),
         expand("results/{sample}_concatenated_res_covariate.csv", sample=SAMPLES),
@@ -173,12 +173,15 @@ rule run_baypass_covariate:
 rule baypass_covariate_diagnostics:
     input:
         summary_betai_reg = "results/{sample}_baypassSplitOut_covariate/covariate_1_summary_betai_reg.out",
+        envfactor_names = "data/{sample}_efile_envfactor_names"
     resources:
         runtime=RESOURCES["baypass_covariate_diagnostics"]["runtime"],
         mem_mb=RESOURCES["baypass_covariate_diagnostics"]["mem_mb"],
         slurm_partition=RESOURCES["baypass_covariate_diagnostics"]["slurm_partition"]
     output:
-        diagnostics_is = "results/{sample}_std_IS_model_diagnostics.png",
+        BFis = "results/{sample}_std_IS_model_BFis.png",
+        eBPis = "results/{sample}_std_IS_model_eBPis.png",
+        Beta_is = "results/{sample}_std_IS_model_Beta_is.png",
     script: "scripts/model_diagnostics_covariate.R"
 
 ## Option 3. Running contrast analysis estimating C2 statistic: 

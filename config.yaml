@@ -9,7 +9,7 @@ samples:
 
 # Paths to the environmental factors and poolsizes files
 input_files:
-  envfactors: "data/20240805_ACORN_dem_TOPO_by_POP_NT.csv"
+  envfactors: "data/20240915_ACORN_dem_TOPO_by_POP_NT.csv"
   poolsizes: "data/20240307_poolsizes_per_pop.csv"
 
 # Parameters for the analysis
