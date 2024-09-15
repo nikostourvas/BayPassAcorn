@@ -14,41 +14,10 @@ input_files:
 
 # Parameters for the analysis
 parameters:
-  n_subs: 6  # Number of subsets for splitting the baypass input file
+  n_subs: 12  # Number of subsets for splitting the baypass input file
   n_core_replicates: 3  # Number of replicates for the core model
   min_haploid_pool_size: 15  # Minimum haploid pool size
   n_pilot: 100  # Number of pilot runs
-
-# Metadata for each sample
-sample_metadata:
-  ACORN_Qrob_3GA_MinDP20_MaxMeanDP188_Miss0075_MAF005_HDplot:
-    npop: 40  # Number of populations
-  ACORN_Qrob_3CA_MinDP20_MaxMeanDP189_Miss0075_MAF005_HDplot:
-    npop: 20
-  ACORN_Qrob_3EA_MinDP20_MaxMeanDP191_Miss0075_MAF005_HDplot:
-    npop: 20
-  ACORN_Qrob_3GP_MinDP20_MaxMeanDP189_Miss0075_MAF005_HDplot:
-    npop: 32
-  ACORN_Qrob_3EP_MinDP20_MaxMeanDP196_Miss0075_MAF005_HDplot:
-    npop: 12
-  ACORN_Qpet_1EA:
-    npop: 12
-  ACORN_Qpet_1EA_MinDP20_MaxMeanDP185_Miss0075_MAF005_HDplot:
-    npop: 12
-  ACORN_Qpet_1CA_MinDP20_MaxMeanDP178_Miss0075_MAF005_HDplot:
-    npop: 20
-  ACORN_Qpet_1GA_MinDP20_MaxMeanDP178_Miss0075_MAF005_HDplot:
-    npop: 32
-  ACORN_Qpub_2GA_MinDP20_MaxMeanDP164_Miss0075_MAF005_HDplot:
-    npop: 38
-  ACORN_Qpub_2GP_MinDP20_MaxMeanDP166_Miss0075_MAF005_HDplot:
-    npop: 34
-  ACORN_Qpub_2EA_MinDP20_MaxMeanDP171_Miss0075_MAF005_HDplot:
-    npop: 17
-  ACORN_Qpub_2EP_MinDP20_MaxMeanDP175_Miss0075_MAF005_HDplot:
-    npop: 16
-  ACORN_Qpub_2CA_MinDP20_MaxMeanDP165_Miss0075_MAF005_HDplot:
-    npop: 19
 
 # Set resources settings for each rule
 # This is only useful if you are running the pipeline on a HPC cluster
@@ -91,10 +60,10 @@ resources:
     mem_mb: 8000
     slurm_partition: "batch"
   concatenate_results_covariate:
-    runtime: 30
-    mem_mb: 8000
+    runtime: 120
+    mem_mb: 24000
     slurm_partition: "batch"
   concatenate_results_c2:
-    runtime: 30
-    mem_mb: 8000
+    runtime: 120
+    mem_mb: 24000
     slurm_partition: "batch"
