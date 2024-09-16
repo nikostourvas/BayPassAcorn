@@ -39,7 +39,7 @@ if (!snakemake@params[[4]]) {
 
     # Optional step
     # Remove SNPs with a Bayes factor lower than -10 to make plotting faster
-    all.res = all.res[all.res$BF.dB. > -10,]
+    all.res = all.res[all.res$BF.dB. > 5,]
 
     # Manhattan plot of the Bayes factors
     p = ggplot(all.res,aes(x=POS, y=BF.dB., color=CHR)) + 
