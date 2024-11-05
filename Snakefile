@@ -10,6 +10,9 @@ singularity: config["singularity"]
 # Get list of sample names from config file
 SAMPLES = config["samples"]
 
+# Get list of environment factors from config file
+ENVFACTOR_NAMES = config["envfactor_names"]
+
 # Get input file names from config file
 ENVFACTORS = config["input_files"]["envfactors"]
 POOLSIZES = config["input_files"]["poolsizes"]
@@ -44,7 +47,9 @@ rule all:
         expand("results/{sample}_C2_model_diagnostics.pdf", sample=SAMPLES),
         expand("results/{sample}_xtxst_pvalue_dist.pdf", sample=SAMPLES),
         expand("results/{sample}_concatenated_res_covariate.csv", sample=SAMPLES),
-        expand("results/{sample}_concatenated_res_contrast.csv", sample=SAMPLES)
+        expand("results/{sample}_concatenated_res_contrast.csv", sample=SAMPLES),
+        expand("results/{sample}_scatterplots/{envfactor}_scatterplots.pdf", sample=SAMPLES, envfactor=ENVFACTOR_NAMES)
+
     resources:
         runtime=RESOURCES["all"]["runtime"],
         mem_mb=RESOURCES["all"]["mem_mb"],
@@ -237,21 +242,36 @@ rule c2_diagnostics:
 rule concatenate_results_covariate:
     input:
         envfactor_names = "data/{sample}_efile_envfactor_names",
-        covariate = expand("results/{{sample}}_baypassSplitOut_covariate/covariate_{i}_summary_betai_reg.out", 
-        i=range(1, N_SUBS+1)),
+        covariate = expand("results/{{sample}}_baypassSplitOut_covariate/covariate_{i}_summary_betai_reg.out", i=range(1, N_SUBS+1)),
     params:
         prefixcovariate = "results/{sample}_baypassSplitOut_covariate/covariate",
         subs=N_SUBS,
         snpdetprefix = "results/subsets/{sample}.snpdet.sub",
-        retrieve_c2= False
+        retrieve_c2= False,
     resources:
         runtime=RESOURCES["concatenate_results_covariate"]["runtime"],
         mem_mb=RESOURCES["concatenate_results_covariate"]["mem_mb"],
         slurm_partition=RESOURCES["concatenate_results_covariate"]["slurm_partition"]       
     output:
         covariateresults = "results/{sample}_concatenated_res_covariate.csv",
-        manhattanplot = "results/{sample}_manhattanplot_covariate.png"
+        manhattanplot = "results/{sample}_manhattanplot_covariate.png",
     script: "scripts/concatenate_res.R"
+
+rule gea_scatter_plots:
+    input:
+        covariateresults = "results/{sample}_concatenated_res_covariate.csv",
+        frequency_table = "data/{sample}_AlleleFrequencyTable.txt",
+        envfactor_names = "data/{sample}_efile_envfactor_names",
+        efile="data/{sample}_efile",
+    resources:
+        runtime=RESOURCES["gea_scatter_plots"]["runtime"],
+        mem_mb=RESOURCES["gea_scatter_plots"]["mem_mb"],
+        slurm_partition=RESOURCES["gea_scatter_plots"]["slurm_partition"]
+    params:
+        pdfprefix = "results/{sample}_scatterplots/"
+    output:
+        scatterplots = expand("results/{{sample}}_scatterplots/{envfactor}_scatterplots.pdf", envfactor=ENVFACTOR_NAMES)
+    script: "scripts/scatter_plots.R"
 
 rule concatenate_results_c2:
     input:

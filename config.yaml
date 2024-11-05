@@ -7,6 +7,9 @@ singularity: "/home/nikos/other_apps/bin/poolseq_tools_0.2.11.sif"
 samples:
   - ACORN_Qpet_1EA
 
+# List of envfactor names
+envfactor_names: ["hillshade", "aspect.eastness", "aspect.northness", "topographic.exposure", "horizontal.curvature", "vertical.curvature", "vrm", "wetness.index.dinf", "diffus.solar.radiation", "direct.solar.radiation", "total.solar.radiation", "bio1", "bio2", "bio3", "bio4", "bio5", "bio6", "bio7", "bio8", "bio9", "bio10", "bio11", "bio12", "bio13", "bio14", "bio15", "bio16", "bio17", "bio18", "bio19", "slope.degrees"]
+
 # Paths to the environmental factors and poolsizes files
 input_files:
   envfactors: "data/20240915_ACORN_dem_TOPO_by_POP_NT.csv"
@@ -60,6 +63,10 @@ resources:
     mem_mb: 8000
     slurm_partition: "batch"
   concatenate_results_covariate:
+    runtime: 180
+    mem_mb: 36000
+    slurm_partition: "batch"
+  gea_scatter_plots:
     runtime: 180
     mem_mb: 36000
     slurm_partition: "batch"

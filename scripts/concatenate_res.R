@@ -1,4 +1,6 @@
 source("scripts/baypass_utils.R")
+library(ggplot2)
+library(data.table)
 
 all.res = concatenate_res(
                         anaprefix = snakemake@params[[1]],
@@ -11,6 +13,8 @@ all.res = concatenate_res(
 write.table(all.res, snakemake@output[[1]], sep = ",", 
             row.names = FALSE, quote = FALSE)
 
+print("Baypass results concatenated")
+
 # if snakemake@params[[4]] is TRUE, script is finished. Otherwise, generate Manhattan plots per covariable
 if (!snakemake@params[[4]]) {
     # Produce the diagnostic graphs suggested by Baypass with ggplot
@@ -22,9 +26,6 @@ if (!snakemake@params[[4]]) {
     envfactor_names = read.table(snakemake@input[[1]],h=F)
 
     # Produce the diagnostic graphs suggested by Baypass with ggplot2, but additionally we will facet by COVARIABLE
-    library(ggplot2)
-    library(data.table)
-
     # Ensure the number of columns in all.res matches the number of names in envfactor_names$V1
     if (ncol(all.res) != (5 + nrow(envfactor_names))) {
         stop("Mismatch between number of columns in all.res and number of names in envfactor_names")
@@ -60,3 +61,5 @@ if (!snakemake@params[[4]]) {
 
     ggsave(snakemake@output[[2]],width=10,height=60, units="in", dpi=300, limitsize=FALSE)
 }
+
+print("Manhattan plots completed")
