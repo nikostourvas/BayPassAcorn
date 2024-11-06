@@ -22,6 +22,7 @@ N_SUBS = config["parameters"]["n_subs"]
 N_CORE_REPLICATES = config["parameters"]["n_core_replicates"]
 MIN_HAPLOID_POOL_SIZE = config["parameters"]["min_haploid_pool_size"]
 N_PILOT = config["parameters"]["n_pilot"]
+BF_THRESHOLD = config["parameters"]["bf_threshold"]
 
 # Get resources from config file
 RESOURCES = config["resources"]
@@ -268,6 +269,7 @@ rule gea_scatter_plots:
         mem_mb=RESOURCES["gea_scatter_plots"]["mem_mb"],
         slurm_partition=RESOURCES["gea_scatter_plots"]["slurm_partition"]
     params:
+        BFthreshold = BF_THRESHOLD,
         pdfprefix = "results/{sample}_scatterplots/"
     output:
         scatterplots = expand("results/{{sample}}_scatterplots/{envfactor}_scatterplots.pdf", envfactor=ENVFACTOR_NAMES)

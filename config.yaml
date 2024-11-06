@@ -21,6 +21,7 @@ parameters:
   n_core_replicates: 3  # Number of replicates for the core model
   min_haploid_pool_size: 15  # Minimum haploid pool size
   n_pilot: 100  # Number of pilot runs
+  bf_threshold: 20  # Bayes factor threshold
 
 # Set resources settings for each rule
 # This is only useful if you are running the pipeline on a HPC cluster

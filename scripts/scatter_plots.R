@@ -24,7 +24,7 @@ all.res = melt(all.res, id.vars=c("CHR","POS","M_P","M_XtX", "XtXst"),
 
 # Extract significant SNPs
 all.res$CHR = as.numeric(all.res$CHR)
-sig.snps = all.res[all.res$BF.dB. > 1,]
+sig.snps = all.res[all.res$BF.dB. > snakemake@params[[1]],]
 
 # Extract allele frequencies
 afs = fread(snakemake@input[[2]], header=TRUE)
@@ -111,7 +111,7 @@ for (covar in unique(fulldata$COVARIABLE)) {
     total_height <- panel_height * rows
     
     # Save the plot with calculated dimensions
-    plot_filename <- paste0(snakemake@params[[1]], covar, "_scatterplots.pdf")
+    plot_filename <- paste0(snakemake@params[[2]], covar, "_scatterplots.pdf")
     ggsave(plot_filename, p, width = total_width, height = total_height, units = "in", limitsize = FALSE)
 }
 
