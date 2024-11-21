@@ -29,6 +29,13 @@ generate_complementary_Baypass_inputs = function(x) {
     select(-c("Plot_ID", "Pair_ID", "Site_description",
               "Latitude", "Longitude", "elevation")) 
 
+  # Generate ranked data if requested
+  if (snakemake@params[[1]]) {
+      for (i in 1:ncol(envfactors_sub)) {
+        envfactors_sub[,i] = rank(envfactors_sub[,i])
+      }
+  }
+
   # write the column names (envfactors) to a new file
   write.table(colnames(envfactors_sub), paste0("data/", x, "_efile_envfactor_names"), sep = " ", 
               col.names=FALSE, row.names=FALSE, quote=FALSE)
