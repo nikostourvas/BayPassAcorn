@@ -45,10 +45,10 @@ rule all:
         expand("results/{sample}_baypassSplitOut_covariate/covariate_{i}_summary_betai_reg.out", 
             sample=SAMPLES, i=range(1, N_SUBS+1)),
         expand("results/{sample}_std_IS_model_BFis.png", sample=SAMPLES),
-        expand("results/{sample}_C2_model_diagnostics.pdf", sample=SAMPLES),
+        #expand("results/{sample}_C2_model_diagnostics.pdf", sample=SAMPLES),
         expand("results/{sample}_xtxst_pvalue_dist.pdf", sample=SAMPLES),
         expand("results/{sample}_concatenated_res_covariate.csv", sample=SAMPLES),
-        expand("results/{sample}_concatenated_res_contrast.csv", sample=SAMPLES),
+        #expand("results/{sample}_concatenated_res_contrast.csv", sample=SAMPLES),
         expand("results/{sample}_scatterplots/{envfactor}_scatterplots.pdf", sample=SAMPLES, envfactor=ENVFACTOR_NAMES)
 
     resources:
@@ -60,6 +60,8 @@ rule generate_complementary_inputs:
     input:
         envfactors=ENVFACTORS,
         poolsizes=POOLSIZES,
+    params:
+        ranked=False,
     resources:
         runtime=RESOURCES["generate_complementary_inputs"]["runtime"],
         mem_mb=RESOURCES["generate_complementary_inputs"]["mem_mb"],
