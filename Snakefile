@@ -23,6 +23,8 @@ N_CORE_REPLICATES = config["parameters"]["n_core_replicates"]
 MIN_HAPLOID_POOL_SIZE = config["parameters"]["min_haploid_pool_size"]
 N_PILOT = config["parameters"]["n_pilot"]
 BF_THRESHOLD = config["parameters"]["bf_threshold"]
+WZA_WINDOW_SIZE = config["parameters"]["WZA_window_size"]
+WZA_FDR = config["parameters"]["WZA_fdr"]
 
 # Get resources from config file
 RESOURCES = config["resources"]
@@ -49,7 +51,11 @@ rule all:
         expand("results/{sample}_xtxst_pvalue_dist.pdf", sample=SAMPLES),
         expand("results/{sample}_concatenated_res_covariate.csv", sample=SAMPLES),
         #expand("results/{sample}_concatenated_res_contrast.csv", sample=SAMPLES),
-        expand("results/{sample}_scatterplots/{envfactor}_scatterplots.pdf", sample=SAMPLES, envfactor=ENVFACTOR_NAMES)
+        expand("results/{sample}_scatterplots/{envfactor}_scatterplots.pdf", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
+        expand("data/WZA/{sample}_WZA_input.csv", sample=SAMPLES),
+        expand("results/WZA_res/{sample}_{envfactor}_WZA_output.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
+        expand("results/WZA_res/{sample}_WZA_manhattan_plots.png", sample=SAMPLES)
+
 
     resources:
         runtime=RESOURCES["all"]["runtime"],
@@ -293,3 +299,53 @@ rule concatenate_results_c2:
     output:
         contrasttable = "results/{sample}_concatenated_res_contrast.csv"
     script: "scripts/concatenate_res.R"
+
+rule prepare_WZA:
+    input:
+        covariateresults = "results/{sample}_concatenated_res_covariate.csv",
+        frequency_table = "data/{sample}_AlleleFrequencyTable.txt",
+        envfactor_names = "data/{sample}_efile_envfactor_names",
+    params:
+        window_size = WZA_WINDOW_SIZE
+    output:
+        WZA_input = "data/WZA/{sample}_WZA_input.csv"
+    shell:
+        """
+        ( echo "$(head -1 {input.covariateresults} \
+            | cut -d',' -f1-5),$(paste -sd',' {input.envfactor_names})"; tail -n +2 {input.covariateresults} ) \
+            | awk -f scripts/Make_Genomic_Windows.sh -v window_size={params.window_size} > tmp1
+
+        awk -f scripts/Calculate_Mean_MAF.sh {input.frequency_table} | cut -d',' -f3 > tmpMAF
+
+        paste -d',' tmp1 tmpMAF > {output}
+        rm tmp1 tmpMAF
+        """
+
+rule WZA:
+    input:
+        WZA_input = "data/WZA/{sample}_WZA_input.csv",
+    output:
+        WZA_output = "results/WZA_res/{sample}_{envfactor}_WZA_output.csv"
+    shell:
+        """
+        python3 scripts/general_WZA_script.py \
+            --correlations {input.WZA_input} \
+            --summary_stat {wildcards.envfactor} \
+            --window window_id \
+            --MAF MAF \
+            --sep "," \
+            --large_i_small_p \
+            --retain POS \
+            --output {output.WZA_output}
+        """
+
+rule WZA_dianostics:
+    input:
+        envfactor_names = "data/{sample}_efile_envfactor_names",
+        WZA_output = expand("results/WZA_res/{{sample}}_{envfactor}_WZA_output.csv", envfactor=ENVFACTOR_NAMES),
+    params:
+        prefix = "results/WZA_res/{sample}_",
+        FDR_level = WZA_FDR,
+    output:
+        WZA_manhattan_plots = "results/WZA_res/{sample}_WZA_manhattan_plots.png",
+    script: "scripts/WZA_diagnostics.R"
