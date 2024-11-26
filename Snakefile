@@ -313,12 +313,12 @@ rule prepare_WZA:
         """
         ( echo "$(head -1 {input.covariateresults} \
             | cut -d',' -f1-5),$(paste -sd',' {input.envfactor_names})"; tail -n +2 {input.covariateresults} ) \
-            | awk -f scripts/Make_Genomic_Windows.sh -v window_size={params.window_size} > tmp1
+            | awk -f scripts/Make_Genomic_Windows.sh -v window_size={params.window_size} > tmp1_{wildcards.sample}
 
-        awk -f scripts/Calculate_Mean_MAF.sh {input.frequency_table} | cut -d',' -f3 > tmpMAF
+        awk -f scripts/Calculate_Mean_MAF.sh {input.frequency_table} | cut -d',' -f3 > tmpMAF_{wildcards.sample}
 
-        paste -d',' tmp1 tmpMAF > {output}
-        rm tmp1 tmpMAF
+        paste -d',' tmp1_{wildcards.sample} tmpMAF_{wildcards.sample} > {output}
+        rm tmp1_{wildcards.sample} tmpMAF_{wildcards.sample}
         """
 
 rule WZA:
