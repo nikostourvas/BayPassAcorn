@@ -54,15 +54,17 @@ NR == 1 {
         # Use 'int' to get the integer part (floor division)
         # Add 1 to start window numbering from 1
         window_number = int((POS - 1) / window_size) + 1;
+        # Zero-pad the window_number to 5 digits
+        window_number_padded = sprintf("%05d", window_number);
     } else {
         # If 'POS' is not numeric, set 'window_number' to 'NA'
-        window_number = "NA";
+        window_number_padded = "NA";
     }
 
     # Construct the 'window_id' by combining 'CHR' and 'window_number'
-    window_id = CHR "_window_" window_number;
+    window_id = CHR "_window_" window_number_padded;
 
     # Print the original data line with the new window information
-    print $0, window_number, window_id;
+    print $0, window_number_padded, window_id;
 }
 
