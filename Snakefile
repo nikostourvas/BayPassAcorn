@@ -347,7 +347,7 @@ rule WZA:
             --output {output.WZA_output}
         """
 
-rule WZA_dianostics:
+rule WZA_diagnostics:
     input:
         envfactor_names = "data/{sample}_efile_envfactor_names",
         WZA_output = expand("results/WZA_res/{{sample}}_{envfactor}_WZA_output.csv", envfactor=ENVFACTOR_NAMES),
@@ -355,9 +355,9 @@ rule WZA_dianostics:
         prefix = "results/WZA_res/{sample}_",
         FDR_level = WZA_FDR,
     resources:
-        runtime=RESOURCES["WZA_dianostics"]["runtime"],
-        mem_mb=RESOURCES["WZA_dianostics"]["mem_mb"],
-        slurm_partition=RESOURCES["WZA_dianostics"]["slurm_partition"]
+        runtime=RESOURCES["WZA_diagnostics"]["runtime"],
+        mem_mb=RESOURCES["WZA_diagnostics"]["mem_mb"],
+        slurm_partition=RESOURCES["WZA_diagnostics"]["slurm_partition"]
     output:
         WZA_manhattan_plots = "results/WZA_res/{sample}_WZA_manhattan_plots.png",
     script: "scripts/WZA_diagnostics.R"
