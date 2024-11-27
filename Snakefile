@@ -306,7 +306,11 @@ rule prepare_WZA:
         frequency_table = "data/{sample}_AlleleFrequencyTable.txt",
         envfactor_names = "data/{sample}_efile_envfactor_names",
     params:
-        window_size = WZA_WINDOW_SIZE
+        window_size = WZA_WINDOW_SIZE,
+    resources:
+        runtime=RESOURCES["prepare_WZA"]["runtime"],
+        mem_mb=RESOURCES["prepare_WZA"]["mem_mb"],
+        slurm_partition=RESOURCES["prepare_WZA"]["slurm_partition"]
     output:
         WZA_input = "data/WZA/{sample}_WZA_input.csv"
     shell:
@@ -324,6 +328,10 @@ rule prepare_WZA:
 rule WZA:
     input:
         WZA_input = "data/WZA/{sample}_WZA_input.csv",
+    resources:
+        runtime=RESOURCES["WZA"]["runtime"],
+        mem_mb=RESOURCES["WZA"]["mem_mb"],
+        slurm_partition=RESOURCES["WZA"]["slurm_partition"]
     output:
         WZA_output = protected("results/WZA_res/{sample}_{envfactor}_WZA_output.csv"),
     shell:
@@ -346,6 +354,10 @@ rule WZA_dianostics:
     params:
         prefix = "results/WZA_res/{sample}_",
         FDR_level = WZA_FDR,
+    resources:
+        runtime=RESOURCES["WZA_dianostics"]["runtime"],
+        mem_mb=RESOURCES["WZA_dianostics"]["mem_mb"],
+        slurm_partition=RESOURCES["WZA_dianostics"]["slurm_partition"]
     output:
         WZA_manhattan_plots = "results/WZA_res/{sample}_WZA_manhattan_plots.png",
     script: "scripts/WZA_diagnostics.R"
