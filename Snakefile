@@ -325,7 +325,7 @@ rule WZA:
     input:
         WZA_input = "data/WZA/{sample}_WZA_input.csv",
     output:
-        WZA_output = "results/WZA_res/{sample}_{envfactor}_WZA_output.csv"
+        WZA_output = protected("results/WZA_res/{sample}_{envfactor}_WZA_output.csv"),
     shell:
         """
         python3 scripts/general_WZA_script.py \
