@@ -79,3 +79,14 @@ resources:
     runtime: 120
     mem_mb: 24000
     slurm_partition: "batch"
+  prepare_WZA:
+    runtime: 40
+    slurm_partition: "batch"
+  WZA:
+    runtime: 60
+    mem_mb: 70000
+    slurm_partition: "batch"
+  WZA_diagnostics:
+    runtime: 30
+    mem_mb: 8000
+    slurm_partition: "batch"
