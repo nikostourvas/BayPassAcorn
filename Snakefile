@@ -54,7 +54,8 @@ rule all:
         expand("results/{sample}_scatterplots/{envfactor}_scatterplots.pdf", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
         expand("data/WZA/{sample}_WZA_input.csv", sample=SAMPLES),
         expand("results/WZA_res/{sample}_{envfactor}_WZA_output.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
-        expand("results/WZA_res/{sample}_WZA_manhattan_plots.png", sample=SAMPLES)
+        expand("results/WZA_res/{sample}_WZA_manhattan_plots.png", sample=SAMPLES),
+        expand("results/WZA_res/{sample}_{envfactor}_WZA_output_fdr.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES)
 
 
     resources:
@@ -360,4 +361,5 @@ rule WZA_diagnostics:
         slurm_partition=RESOURCES["WZA_diagnostics"]["slurm_partition"]
     output:
         WZA_manhattan_plots = "results/WZA_res/{sample}_WZA_manhattan_plots.png",
+        WZA_output_fdr = protected(expand("results/WZA_res/{{sample}}_{envfactor}_WZA_output_fdr.csv", envfactor=ENVFACTOR_NAMES))
     script: "scripts/WZA_diagnostics.R"
