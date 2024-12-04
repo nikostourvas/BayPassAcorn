@@ -40,6 +40,8 @@ def count_words_in_file(file_path):
 
 rule all:
     input:
+        expand("data/{sample}_efile", sample=SAMPLES),
+        expand("results/subsets/{sample}.genobaypass.sub{i}", sample=SAMPLES, i=range(1, N_SUBS+1)),
         expand("results/{sample}_baypassSplitOut_core/core_{i}_mat_omega.out", sample=SAMPLES,
             i=range(1, N_CORE_REPLICATES+1)),
         expand("results/{sample}_omega_comp.pdf", sample=SAMPLES),
