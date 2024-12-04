@@ -18,6 +18,7 @@ input_files:
 
 # Parameters for the analysis
 parameters:
+  rank_transform_covariates: True
   n_subs: 270  # Number of subsets for splitting the baypass input file
   n_core_replicates: 3  # Number of replicates for the core model
   min_haploid_pool_size: 15  # Minimum haploid pool size

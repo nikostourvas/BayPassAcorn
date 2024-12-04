@@ -18,6 +18,7 @@ ENVFACTORS = config["input_files"]["envfactors"]
 POOLSIZES = config["input_files"]["poolsizes"]
 
 # Get parameters from config file
+RANK_ANALYSIS_FLAG = config["parameters"]["rank_transform_covariates"]
 N_SUBS = config["parameters"]["n_subs"]
 N_CORE_REPLICATES = config["parameters"]["n_core_replicates"]
 MIN_HAPLOID_POOL_SIZE = config["parameters"]["min_haploid_pool_size"]
@@ -70,7 +71,7 @@ rule generate_complementary_inputs:
         envfactors=ENVFACTORS,
         poolsizes=POOLSIZES,
     params:
-        ranked=False,
+        ranked=RANK_ANALYSIS_FLAG,
     resources:
         runtime=RESOURCES["generate_complementary_inputs"]["runtime"],
         mem_mb=RESOURCES["generate_complementary_inputs"]["mem_mb"],
