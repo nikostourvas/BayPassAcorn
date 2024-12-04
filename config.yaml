@@ -18,12 +18,12 @@ input_files:
 
 # Parameters for the analysis
 parameters:
-  n_subs: 12  # Number of subsets for splitting the baypass input file
+  n_subs: 270  # Number of subsets for splitting the baypass input file
   n_core_replicates: 3  # Number of replicates for the core model
   min_haploid_pool_size: 15  # Minimum haploid pool size
-  n_pilot: 100  # Number of pilot runs
-  bf_threshold: 0  # Bayes factor threshold
-  WZA_window_size: 1000  # Window size for the WZA
+  n_pilot: 20  # Number of pilot runs
+  bf_threshold: 20  # Bayes factor threshold
+  WZA_window_size: 10000  # Window size for the WZA
   WZA_fdr: 0.05  # False discovery rate for the WZA
 
 
@@ -81,10 +81,11 @@ resources:
     slurm_partition: "batch"
   prepare_WZA:
     runtime: 40
+    mem_mb: 8000
     slurm_partition: "batch"
   WZA:
     runtime: 60
-    mem_mb: 70000
+    mem_mb: 100000
     slurm_partition: "batch"
   WZA_diagnostics:
     runtime: 30
