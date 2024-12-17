@@ -83,9 +83,30 @@ p <- ggplot(WZA_res, aes(x=POS, y=score, color=CHR)) +
         panel.grid.major.x = element_blank(),
         panel.grid.minor.x = element_blank(), 
         panel.grid.minor.y = element_blank()) +
-  xlab("chromosome")+ ylab("-log10(q-value)")
+  xlab("chromosome")+ ylab("-log10(p-value)")
 
 ggsave(snakemake@output[[1]],width=10,height=60, units="in", dpi=300, limitsize=FALSE)
+
+WZA_res$score = -log10(WZA_res$pvalue)
+
+p <- ggplot(WZA_res, aes(x=POS, y=score, color=CHR)) + 
+  geom_point(alpha=1, size=0.8) +
+  # geom_point(data=WZA_res[WZA_res$qvalue==TRUE,], aes(x=POS, y=score), color="darkred", size=.8) +
+  # geom_point(data=WZA_res[WZA_res$qvalue0.001==TRUE,], aes(x=POS, y=score), color="red", size=.8) +
+  facet_grid(factor(envfactor, levels=envfactors)~CHR, space = "free_x", scales = "free") +
+  scale_color_manual(values = rep(c("black", "grey"), 2000)) + 
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        panel.spacing.x = unit(0, "lines"),
+        panel.border = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(), 
+        panel.grid.minor.y = element_blank()) +
+  xlab("chromosome")+ ylab("-log10(p-value)")
+
+ggsave(snakemake@output[[3]],width=10,height=60, units="in", dpi=300, limitsize=FALSE)
 
 ############################
 # P-value distribution plots
@@ -126,7 +147,7 @@ for (env in envfactors) {
 # Loop over each envfactor
 for (env in envfactors) {
   # Set up the file name for the PNG
-  png_filename <- paste0(snakemake@params[[1]], "Pvalue_and_QQ_Plots_(GIF corrected)", env, ".png")
+  png_filename <- paste0(snakemake@params[[1]], "Pvalue_and_QQ_Plots_(GIF_corrected)", env, ".png")
   
   # Open the PNG device
   png(filename = png_filename, width = 1050, height = 750, units = "px")
