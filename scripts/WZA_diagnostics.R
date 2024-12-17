@@ -106,7 +106,7 @@ p <- ggplot(WZA_res, aes(x=POS, y=score, color=CHR)) +
         panel.grid.minor.y = element_blank()) +
   xlab("chromosome")+ ylab("-log10(p-value)")
 
-ggsave(snakemake@output[[3]],width=10,height=60, units="in", dpi=300, limitsize=FALSE)
+ggsave(snakemake@output[[2]],width=10,height=60, units="in", dpi=300, limitsize=FALSE)
 
 ############################
 # P-value distribution plots
@@ -147,7 +147,7 @@ for (env in envfactors) {
 # Loop over each envfactor
 for (env in envfactors) {
   # Set up the file name for the PNG
-  png_filename <- paste0(snakemake@params[[1]], "Pvalue_and_QQ_Plots_(GIF_corrected)", env, ".png")
+  png_filename <- paste0(snakemake@params[[1]], "Pvalue_and_QQ_Plots_(GIF_corrected)_", env, ".png")
   
   # Open the PNG device
   png(filename = png_filename, width = 1050, height = 750, units = "px")

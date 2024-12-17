@@ -364,6 +364,6 @@ rule WZA_diagnostics:
         slurm_partition=RESOURCES["WZA_diagnostics"]["slurm_partition"]
     output:
         WZA_manhattan_plots = "results/WZA_res/{sample}_WZA_manhattan_plots.png",
-        WZA_output_fdr = protected(expand("results/WZA_res/{{sample}}_{envfactor}_WZA_output_fdr.csv", envfactor=ENVFACTOR_NAMES)),
         WZA_manhattan_plots_wo_GIF = "results/WZA_res/{sample}_WZA_manhattan_plots_wo_GIF.png",
+        WZA_output_fdr = protected(expand("results/WZA_res/{{sample}}_{envfactor}_WZA_output_fdr.csv", envfactor=ENVFACTOR_NAMES)),
     script: "scripts/WZA_diagnostics.R"
