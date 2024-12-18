@@ -35,27 +35,33 @@ print("Calculating q-values")
 # for some reason, while testing with a toy dataset, WZA produced few NAs
 # Until we investigate further, I replace those NAs with 1
 #WZA_res = lapply(WZA_res, function(x) {x$Z_pVal_gif_adj[is.na(x$Z_pVal)] = 1; return(x)})
-WZA_res = lapply(WZA_res, function(x) {x$qvalue = qvalue(x$Z_pVal_gif_adj, fdr.level=FDR_LEVEL)$significant; return(x)})
-WZA_res = lapply(WZA_res, function(x) {x$qvalue0.001 = qvalue(x$Z_pVal_gif_adj, fdr.level=0.001)$significant; return(x)})
+WZA_res = lapply(WZA_res, function(x) {x$qvalue = qvalue(x$Z_pVal, fdr.level=FDR_LEVEL)$significant; return(x)})
+WZA_res = lapply(WZA_res, function(x) {x$qvalue0.001 = qvalue(x$Z_pVal, fdr.level=0.001)$significant; return(x)})
+WZA_res = lapply(WZA_res, function(x) {x$qvalue_gif_adj = qvalue(x$Z_pVal_gif_adj, fdr.level=FDR_LEVEL)$significant; return(x)})
+WZA_res = lapply(WZA_res, function(x) {x$qvalue0.001_gif_adj = qvalue(x$Z_pVal_gif_adj, fdr.level=0.001)$significant; return(x)})
 # export each table to a file
 for (i in envfactors){
   write.table(WZA_res[[i]], file=paste0(snakemake@params[[1]], i, "_WZA_output_fdr.csv"), 
               sep=",", row.names=FALSE, quote=FALSE)
 }
 
-WZA_res = lapply(WZA_res, function(x) x[ ,c(1,2,6,7,8,9,10)]) # keep only the columns we need for plotting
+WZA_res = lapply(WZA_res, function(x) x[ ,c(1,2,6,7,8,9,10,11,12)]) # keep only the columns we need for plotting
 WZA_res = reshape2::melt(WZA_res, id.vars = c("index", "SNPs", "POS"))
 # Make the dataset wide. Spread the "variable" column into multiple columns
 WZA_res = spread(WZA_res, variable, value)
 WZA_res$qvalue = as.logical(WZA_res$qvalue)
 WZA_res$qvalue0.001 = as.logical(WZA_res$qvalue0.001)
+WZA_res$qvalue_gif_adj = as.logical(WZA_res$qvalue_gif_adj)
+WZA_res$qvalue0.001_gif_adj = as.logical(WZA_res$qvalue0.001_gif_adj)
 
 WZA_res$index = as.factor(gsub("Qrob_Chr", "", WZA_res$index)) # remove prefix from chr names
 WZA_res$index = as.factor(gsub("Sc0000", "", WZA_res$index)) # remove prefix from chromosome names
 # remove from rows of the column WZA_res$index the suffix "_window_" and anything after that
 WZA_res$index = as.factor(gsub("_window_.*", "", WZA_res$index))
 
-colnames(WZA_res) = c("CHR", "SNPs", "POS", "envfactor", "pvalue", "gif_cor_pvalue", "qvalue", "qvalue0.001")
+colnames(WZA_res) = c("CHR", "SNPs", "POS", "envfactor", 
+                      "pvalue", "gif_cor_pvalue", 
+                      "qvalue", "qvalue0.001", "qvalue_gif_adj", "qvalue0.001_gif_adj")
 write.table(WZA_res, file=paste0(snakemake@params[[1]], "WZA_test.csv"), sep=",", row.names=FALSE, quote=FALSE)
 
 WZA_res$CHR = as.factor(gsub("^0", "", WZA_res$CHR)) # replace 01, 02 etc with 1, 2 etc
@@ -70,8 +76,8 @@ WZA_res$score = -log10(WZA_res$gif_cor_pvalue)
 
 p <- ggplot(WZA_res, aes(x=POS, y=score, color=CHR)) + 
   geom_point(alpha=1, size=0.8) +
-  geom_point(data=WZA_res[WZA_res$qvalue==TRUE,], aes(x=POS, y=score), color="darkred", size=.8) +
-  geom_point(data=WZA_res[WZA_res$qvalue0.001==TRUE,], aes(x=POS, y=score), color="red", size=.8) +
+  geom_point(data=WZA_res[WZA_res$qvalue_gif_adj==TRUE,], aes(x=POS, y=score), color="darkred", size=.8) +
+  geom_point(data=WZA_res[WZA_res$qvalue0.001_gif_adj==TRUE,], aes(x=POS, y=score), color="red", size=.8) +
   facet_grid(factor(envfactor, levels=envfactors)~CHR, space = "free_x", scales = "free") +
   scale_color_manual(values = rep(c("black", "grey"), 2000)) + 
   theme_bw() +
@@ -91,8 +97,8 @@ WZA_res$score = -log10(WZA_res$pvalue)
 
 p <- ggplot(WZA_res, aes(x=POS, y=score, color=CHR)) + 
   geom_point(alpha=1, size=0.8) +
-  # geom_point(data=WZA_res[WZA_res$qvalue==TRUE,], aes(x=POS, y=score), color="darkred", size=.8) +
-  # geom_point(data=WZA_res[WZA_res$qvalue0.001==TRUE,], aes(x=POS, y=score), color="red", size=.8) +
+  geom_point(data=WZA_res[WZA_res$qvalue==TRUE,], aes(x=POS, y=score), color="darkred", size=.8) +
+  geom_point(data=WZA_res[WZA_res$qvalue0.001==TRUE,], aes(x=POS, y=score), color="red", size=.8) +
   facet_grid(factor(envfactor, levels=envfactors)~CHR, space = "free_x", scales = "free") +
   scale_color_manual(values = rep(c("black", "grey"), 2000)) + 
   theme_bw() +
