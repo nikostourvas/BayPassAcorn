@@ -29,6 +29,7 @@ WZA_FDR = config["parameters"]["WZA_fdr"]
 
 # Get resources from config file
 RESOURCES = config["resources"]
+localrules: all
 
 # function to calculate the number of populations
 import os
@@ -59,12 +60,6 @@ rule all:
         expand("results/WZA_res/{sample}_{envfactor}_WZA_output.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
         expand("results/WZA_res/{sample}_WZA_manhattan_plots.png", sample=SAMPLES),
         expand("results/WZA_res/{sample}_{envfactor}_WZA_output_fdr.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES)
-
-
-    resources:
-        runtime=RESOURCES["all"]["runtime"],
-        mem_mb=RESOURCES["all"]["mem_mb"],
-        slurm_partition=RESOURCES["all"]["slurm_partition"]
 
 rule generate_complementary_inputs:
     input:
