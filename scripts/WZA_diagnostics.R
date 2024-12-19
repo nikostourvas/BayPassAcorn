@@ -26,15 +26,15 @@ write.table(gif_table, file=paste0(snakemake@params[[1]], "GIF.csv"), sep=",", r
 
 # Calculate the gif corrected p-values and q-values
 print("Calculating p-values")
+# for some reason, while testing with a toy dataset, WZA produced few NAs
+# Until we investigate further, I replace those NAs with 1
+WZA_res = lapply(WZA_res, function(x) {x$Z_pVal[is.na(x$Z_pVal)] = 1; return(x)})
 for (i in envfactors){
   WZA_res[[i]]$Z_pVal_gif_adj = pchisq(WZA_res[[i]]$Z^2/gif[[i]], df = 1, lower.tail = FALSE)
 }
 
 print("Calculating q-values")
 # FDR correction
-# for some reason, while testing with a toy dataset, WZA produced few NAs
-# Until we investigate further, I replace those NAs with 1
-#WZA_res = lapply(WZA_res, function(x) {x$Z_pVal_gif_adj[is.na(x$Z_pVal)] = 1; return(x)})
 WZA_res = lapply(WZA_res, function(x) {x$qvalue = qvalue(x$Z_pVal, fdr.level=FDR_LEVEL)$significant; return(x)})
 WZA_res = lapply(WZA_res, function(x) {x$qvalue0.001 = qvalue(x$Z_pVal, fdr.level=0.001)$significant; return(x)})
 WZA_res = lapply(WZA_res, function(x) {x$qvalue_gif_adj = qvalue(x$Z_pVal_gif_adj, fdr.level=FDR_LEVEL)$significant; return(x)})
