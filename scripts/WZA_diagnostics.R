@@ -3,6 +3,7 @@ library(data.table)
 library(reshape2)
 library(qvalue)
 library(tidyr)
+library(viridis)
 
 FDR_LEVEL=snakemake@params[[2]]
 
@@ -40,6 +41,7 @@ WZA_res = lapply(WZA_res, function(x) {x$qvalue0.001 = qvalue(x$Z_pVal, fdr.leve
 WZA_res = lapply(WZA_res, function(x) {x$qvalue_gif_adj = qvalue(x$Z_pVal_gif_adj, fdr.level=FDR_LEVEL)$significant; return(x)})
 WZA_res = lapply(WZA_res, function(x) {x$qvalue0.001_gif_adj = qvalue(x$Z_pVal_gif_adj, fdr.level=0.001)$significant; return(x)})
 # export each table to a file
+print("print tables to files")
 for (i in envfactors){
   write.table(WZA_res[[i]], file=paste0(snakemake@params[[1]], i, "_WZA_output_fdr.csv"), 
               sep=",", row.names=FALSE, quote=FALSE)
@@ -54,6 +56,7 @@ WZA_res$qvalue0.001 = as.logical(WZA_res$qvalue0.001)
 WZA_res$qvalue_gif_adj = as.logical(WZA_res$qvalue_gif_adj)
 WZA_res$qvalue0.001_gif_adj = as.logical(WZA_res$qvalue0.001_gif_adj)
 
+print("string manipulation")
 WZA_res$index = as.factor(gsub("Qrob_Chr", "", WZA_res$index)) # remove prefix from chr names
 WZA_res$index = as.factor(gsub("Sc0000", "", WZA_res$index)) # remove prefix from chromosome names
 # remove from rows of the column WZA_res$index the suffix "_window_" and anything after that
@@ -113,6 +116,25 @@ p <- ggplot(WZA_res, aes(x=POS, y=score, color=CHR)) +
   xlab("chromosome")+ ylab("-log10(p-value)")
 
 ggsave(snakemake@output[[2]],width=10,height=60, units="in", dpi=300, limitsize=FALSE)
+
+# verify how many significant SNPs were found in each genomic region to investigate potential biases
+p <- ggplot(WZA_res, aes(x=POS, y=SNPs, color=CHR)) + 
+  geom_point(alpha=1, size=0.8) +
+  facet_grid(factor(envfactor, levels=envfactors)~CHR, space = "free_x", scales = "free") +
+  scale_color_manual(values = rep(c("blue", "lightblue"), 2000)) + 
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        panel.spacing.x = unit(0, "lines"),
+        panel.border = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(), 
+        panel.grid.minor.y = element_blank()) +
+  xlab("chromosome")+ ylab("Number of SNPs in window")
+
+ggsave(snakemake@output[[3]],width=10,height=60, units="in", dpi=300, limitsize=FALSE)
+
 
 ############################
 # P-value distribution plots
@@ -181,3 +203,16 @@ for (env in envfactors) {
   # Close the PNG device
   dev.off()
 }
+
+# Sanity check test: Correlation between Number of SNPs and pvalues
+r_title = paste0("Pearson's r = ", round(cor(WZA_res$SNPs, WZA_res$pvalue, method = "pearson"), 2))
+
+p <- ggplot(WZA_res, aes(x=SNPs, y=pvalue)) + 
+      geom_bin2d(bins=50) + 
+      scale_fill_viridis(trans='log10') +
+      theme_minimal() + 
+      labs(x="Number of SNPs in window", y="pvalues",
+          fill="Log10 Density", title = r_title) + 
+      theme(legend.position = "right")
+
+ggsave(snakemake@output[[4]], width=10, height=10, units="in", limitsize=FALSE)
