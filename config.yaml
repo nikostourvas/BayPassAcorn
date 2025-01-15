@@ -5,23 +5,23 @@ singularity: "/home/nikos/other_apps/bin/poolseq_tools_0.2.11.sif"
 
 # List of sample names
 samples:
-  - ACORN_Qpet_1EA
+  - ACORN_Qpet_1EA_test
 
 # List of envfactor names
-envfactor_names: ["hillshade", "aspect.eastness", "aspect.northness", "topographic.exposure", "horizontal.curvature", "vertical.curvature", "vrm", "wetness.index.dinf", "diffus.solar.radiation", "direct.solar.radiation", "total.solar.radiation", "bio1", "bio2", "bio3", "bio4", "bio5", "bio6", "bio7", "bio8", "bio9", "bio10", "bio11", "bio12", "bio13", "bio14", "bio15", "bio16", "bio17", "bio18", "bio19", "slope.degrees"]
+envfactor_names: ["hillshade", "aspect.eastness", "aspect.northness", "topographic.exposure", "horizontal.curvature", "vertical.curvature", "slope.degrees", "vrm", "wetness.index.dinf", "total.solar.radiation", "bio1", "bio2", "bio3", "bio4", "bio5", "bio6", "bio7", "bio8", "bio9", "bio10", "bio11", "bio12", "bio13", "bio14", "bio15", "bio16", "bio17", "bio18", "bio19"]
 #envfactor_names: ["bio6"]
 
 # Paths to the environmental factors and poolsizes files
 input_files:
-  envfactors: "data/20240915_ACORN_dem_TOPO_by_POP_NT.csv"
-  poolsizes: "data/20240307_poolsizes_per_pop.csv"
+  envfactors: "data/20250113_ACORN_dem_TOPO_by_POP_NT.csv"
+  poolsizes: "data/20250113_poolsizes_per_pop.csv"
 
 # Parameters for the analysis
 parameters:
   rank_transform_covariates: True
-  n_subs: 270  # Number of subsets for splitting the baypass input file
+  n_subs: 256  # Number of subsets for splitting the baypass input file
   n_core_replicates: 3  # Number of replicates for the core model
-  min_haploid_pool_size: 15  # Minimum haploid pool size
+  min_haploid_pool_size: 30  # Minimum haploid pool size
   n_pilot: 20  # Number of pilot runs
   bf_threshold: 20  # Bayes factor threshold
   WZA_window_size: 10000  # Window size for the WZA
@@ -32,14 +32,6 @@ parameters:
 # This is only useful if you are running the pipeline on a HPC cluster
 # If not, you can ignore this section
 resources:
-  all:
-    runtime: 10
-    mem_mb: 1000
-    slurm_partition: "testing"
-  generate_complementary_inputs:
-    runtime: 5
-    mem_mb: 1000
-    slurm_partition: "batch"
   vcf2genobaypass:
     runtime: 90
     mem_mb: 24000
@@ -47,10 +39,6 @@ resources:
   run_baypass_core:
     runtime: 1440
     mem_mb: 1000
-    slurm_partition: "batch"
-  compare_omega:
-    runtime: 30
-    mem_mb: 2000
     slurm_partition: "batch"
   run_baypass_covariate:
     runtime: 12960

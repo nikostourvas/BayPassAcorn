@@ -29,7 +29,7 @@ WZA_FDR = config["parameters"]["WZA_fdr"]
 
 # Get resources from config file
 RESOURCES = config["resources"]
-localrules: all
+localrules: all, generate_complementary_inputs, compare_omega
 
 # function to calculate the number of populations
 import os
@@ -38,7 +38,6 @@ def count_words_in_file(file_path):
     with open(file_path, 'r') as file:
         content = file.read()
     return len(content.split())
-
 
 rule all:
     input:
@@ -56,10 +55,10 @@ rule all:
         expand("results/{sample}_concatenated_res_covariate.csv", sample=SAMPLES),
         #expand("results/{sample}_concatenated_res_contrast.csv", sample=SAMPLES),
         expand("results/{sample}_scatterplots/{envfactor}_scatterplots.pdf", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
-        expand("data/WZA/{sample}_WZA_input.csv", sample=SAMPLES),
-        expand("results/WZA_res/{sample}_{envfactor}_WZA_output.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
-        expand("results/WZA_res/{sample}_WZA_manhattan_plots.png", sample=SAMPLES),
-        expand("results/WZA_res/{sample}_{envfactor}_WZA_output_fdr.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES)
+        # expand("data/WZA/{sample}_WZA_input.csv", sample=SAMPLES),
+        # expand("results/WZA_res/{sample}_{envfactor}_WZA_output.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
+        # expand("results/WZA_res/{sample}_WZA_manhattan_plots.png", sample=SAMPLES),
+        # expand("results/WZA_res/{sample}_{envfactor}_WZA_output_fdr.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES)
 
 rule generate_complementary_inputs:
     input:
@@ -67,10 +66,6 @@ rule generate_complementary_inputs:
         poolsizes=POOLSIZES,
     params:
         ranked=RANK_ANALYSIS_FLAG,
-    resources:
-        runtime=RESOURCES["generate_complementary_inputs"]["runtime"],
-        mem_mb=RESOURCES["generate_complementary_inputs"]["mem_mb"],
-        slurm_partition=RESOURCES["generate_complementary_inputs"]["slurm_partition"]
     output:
         poolsizes="data/{sample}_poolsizes",
         efile="data/{sample}_efile",
@@ -139,10 +134,6 @@ rule compare_omega:
         omega2="results/{sample}_baypassSplitOut_core/core_2_mat_omega.out",
         omega3="results/{sample}_baypassSplitOut_core/core_3_mat_omega.out",
         xtx_summary="results/{sample}_baypassSplitOut_core/core_1_summary_pi_xtx.out"
-    resources:
-        runtime=RESOURCES["compare_omega"]["runtime"],
-        mem_mb=RESOURCES["compare_omega"]["mem_mb"],
-        slurm_partition=RESOURCES["compare_omega"]["slurm_partition"]
     output:
         omega_comp="results/{sample}_omega_comp.pdf",
         omega_comp_table="results/{sample}_omega_comp.csv",
