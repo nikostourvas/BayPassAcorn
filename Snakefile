@@ -69,6 +69,7 @@ rule generate_complementary_inputs:
     output:
         poolsizes="data/{sample}_poolsizes",
         efile="data/{sample}_efile",
+        envfactor_names = "data/{sample}_efile_envfactor_names",
         ecotype="data/{sample}_ecotype",
     script: "scripts/generate_complementary_inputs.R"
 
@@ -351,5 +352,6 @@ rule WZA_diagnostics:
     output:
         WZA_manhattan_plots = "results/WZA_res/{sample}_WZA_manhattan_plots.png",
         WZA_manhattan_plots_wo_GIF = "results/WZA_res/{sample}_WZA_manhattan_plots_wo_GIF.png",
+        WZA_SNPs_per_window = "res/WZA_res/{sample}_WZA_SNPs_per_window.png",
         WZA_output_fdr = protected(expand("results/WZA_res/{{sample}}_{envfactor}_WZA_output_fdr.csv", envfactor=ENVFACTOR_NAMES)),
     script: "scripts/WZA_diagnostics.R"
