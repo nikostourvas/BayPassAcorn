@@ -352,7 +352,7 @@ rule WZA_diagnostics:
     output:
         WZA_manhattan_plots = "results/WZA_res/{sample}_WZA_manhattan_plots.png",
         WZA_manhattan_plots_wo_GIF = "results/WZA_res/{sample}_WZA_manhattan_plots_wo_GIF.png",
-        WZA_SNPs_per_window = "res/WZA_res/{sample}_WZA_SNPs_per_window.png",
-        WZA_SNP_pvalue_correlation = "res/WZA_res/{sample}_WZA_SNP_pvalue_correlation.png",    
+        WZA_SNPs_per_window = "results/WZA_res/{sample}_WZA_SNPs_per_window.png",
+        WZA_SNP_pvalue_correlation = "results/WZA_res/{sample}_WZA_SNP_pvalue_correlation.png",    
         WZA_output_fdr = protected(expand("results/WZA_res/{{sample}}_{envfactor}_WZA_output_fdr.csv", envfactor=ENVFACTOR_NAMES)),
     script: "scripts/WZA_diagnostics.R"
