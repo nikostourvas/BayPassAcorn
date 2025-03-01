@@ -11,6 +11,8 @@ The pipeline:
 
 All required software to run the pipeline is available via the [poolseq_tools](https://github.com/nikostourvas/poolseq_tools) Singularity/Apptainer container.
 
+Head over to the [wiki](https://github.com/nikostourvas/BayPassAcorn/wiki) section to get started.
+
 
 
   
