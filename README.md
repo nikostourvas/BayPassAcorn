@@ -7,7 +7,7 @@ The pipeline:
 - can accomodate multiple environmental factors (each run as a separate univariate analysis),
 - provides option to rank-transform environmental factors,
 - optionally runs the window based Weighted-Z Analysis (WZA) (Booker et al. 2023) using the BayPass results,
-- provides diagnostic plots (p-value distribution, QQplots, Manhattan plots) for each test employed via ggplot2.
+- provides diagnostic plots (p-value histograms/QQplots, Manhattan plots, allele freq vs environmental data scatter plots) for each test employed via ggplot2.
 
 All required software to run the pipeline is available via the [poolseq_tools](https://github.com/nikostourvas/poolseq_tools) Singularity/Apptainer container.
 
