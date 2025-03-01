@@ -3,7 +3,7 @@
 A snakemake pipeline to run Genotype-Environment Association analysis (GEA) using the software BayPass (Gautier 2015) for Pool-Seq data. 
 
 The pipeline:
-- ensures close to linear multi-core performance for BayPass by splitting large-scale genomic data sets into user-defined smaller sets,
+- ensures close to linear multi-core performance scaling for BayPass by splitting large-scale genomic data sets into user-defined smaller sets,
 - can accomodate multiple environmental factors (each run as a separate univariate analysis),
 - provides option to rank-transform environmental factors,
 - optionally runs the window based Weighted-Z Analysis (WZA) (Booker et al. 2023) using the BayPass results,
