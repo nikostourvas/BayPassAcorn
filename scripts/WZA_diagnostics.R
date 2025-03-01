@@ -5,6 +5,12 @@ library(qvalue)
 library(tidyr)
 library(viridis)
 
+# re-direct console output to a log file for use with snakemake on HPC
+# Open log file connection
+log_file <- snakemake@log[[1]]
+log_conn <- file(log_file, open = "wt") # 'wt' opens the file for writing text
+sink(log_conn, append = TRUE, type = "message")
+
 FDR_LEVEL=snakemake@params[[2]]
 
 envfactors = readLines(snakemake@input[[1]])
@@ -216,3 +222,7 @@ p <- ggplot(WZA_res, aes(x=SNPs, y=pvalue)) +
       theme(legend.position = "right")
 
 ggsave(snakemake@output[[4]], width=10, height=10, units="in", limitsize=FALSE)
+
+# Close the log file connection at the end of the script
+sink(type = "message") # Close message redirection
+close(log_conn) # Close the file connection
