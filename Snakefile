@@ -64,6 +64,7 @@ rule generate_complementary_inputs:
     input:
         envfactors=ENVFACTORS,
         poolsizes=POOLSIZES,
+        poolnames="data/{sample}_poolnames",
     params:
         ranked=RANK_ANALYSIS_FLAG,
     output:
@@ -105,11 +106,12 @@ rule vcf2genobaypass:
 # running core model for scanning the genome for differentiation using the XtX statistics
 rule run_baypass_core:
     input:
-        sub="results/subsets/{sample}.genobaypass.sub{i}"
+        sub="results/subsets/{sample}.genobaypass.sub{i}",
+        poolnames="data/{sample}_poolnames"
     params:
         threads=1,
         poolsizefile="data/{sample}_poolsizes",
-        npop=lambda wildcards: count_words_in_file(f"data/{wildcards.sample}_poolnames"),
+        npop=lambda wildcards: count_words_in_file("data/{}_poolnames".format(wildcards.sample)),
         d0yij=MIN_HAPLOID_POOL_SIZE/5,
         npilot=N_PILOT,
     resources:
@@ -146,6 +148,7 @@ rule run_baypass_covariate:
     input:
         sub="results/subsets/{sample}.genobaypass.sub{i}",
         omegafile="results/{sample}_baypassSplitOut_core/core_1_mat_omega.out",
+        poolnames="data/{sample}_poolnames"
     params:
         threads=1,
         poolsizefile="data/{sample}_poolsizes",
@@ -195,6 +198,7 @@ rule run_baypass_c2:
     input:
         sub="results/subsets/{sample}.genobaypass.sub{i}",
         omegafile="results/{sample}_baypassSplitOut_core/core_1_mat_omega.out",
+        poolnames="data/{sample}_poolnames"
     params:
         threads=1,
         poolsizefile="data/{sample}_poolsizes",
@@ -349,6 +353,8 @@ rule WZA_diagnostics:
         runtime=RESOURCES["WZA_diagnostics"]["runtime"],
         mem_mb=RESOURCES["WZA_diagnostics"]["mem_mb"],
         slurm_partition=RESOURCES["WZA_diagnostics"]["slurm_partition"]
+    log:
+        "logs/WZA_diagnostics/{sample}.log"
     output:
         WZA_manhattan_plots = "results/WZA_res/{sample}_WZA_manhattan_plots.png",
         WZA_manhattan_plots_wo_GIF = "results/WZA_res/{sample}_WZA_manhattan_plots_wo_GIF.png",
