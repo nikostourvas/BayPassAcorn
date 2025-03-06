@@ -24,6 +24,7 @@ N_CORE_REPLICATES = config["parameters"]["n_core_replicates"]
 MIN_HAPLOID_POOL_SIZE = config["parameters"]["min_haploid_pool_size"]
 N_PILOT = config["parameters"]["n_pilot"]
 BF_THRESHOLD = config["parameters"]["bf_threshold"]
+SPEARMAN_THRESHOLD = config["parameters"]["spearman_threshold"]
 WZA_WINDOW_SIZE = config["parameters"]["WZA_window_size"]
 WZA_FDR = config["parameters"]["WZA_fdr"]
 
@@ -251,15 +252,17 @@ rule concatenate_results_covariate:
         prefixcovariate = "results/{sample}_baypassSplitOut_covariate/covariate",
         subs=N_SUBS,
         snpdetprefix = "results/subsets/{sample}.snpdet.sub",
-        retrieve_c2= False,
+        retrieve_spearman = True,
     resources:
         runtime=RESOURCES["concatenate_results_covariate"]["runtime"],
         mem_mb=RESOURCES["concatenate_results_covariate"]["mem_mb"],
-        slurm_partition=RESOURCES["concatenate_results_covariate"]["slurm_partition"]       
+        slurm_partition=RESOURCES["concatenate_results_covariate"]["slurm_partition"]
+    log:
+        "logs/concatenate_results_covariate/{sample}.log"       
     output:
         covariateresults = "results/{sample}_concatenated_res_covariate.csv",
         manhattanplot = "results/{sample}_manhattanplot_covariate.png",
-    script: "scripts/concatenate_res.R"
+    script: "scripts/concatenate_res2.R"
 
 rule gea_scatter_plots:
     input:
@@ -273,8 +276,13 @@ rule gea_scatter_plots:
         slurm_partition=RESOURCES["gea_scatter_plots"]["slurm_partition"]
     params:
         BFthreshold = BF_THRESHOLD,
+        spearman_threshold = SPEARMAN_THRESHOLD,
         pdfprefix = "results/{sample}_scatterplots/"
+    log:
+        "logs/gea_scatter_plots/{sample}.log"
     output:
+        BFvsSpearman = "results/{sample}_BFvsSpearman.png",
+        significant_snps = "results/{sample}_significant_snps.csv",
         scatterplots = expand("results/{{sample}}_scatterplots/{envfactor}_scatterplots.pdf", envfactor=ENVFACTOR_NAMES)
     script: "scripts/scatter_plots.R"
 
