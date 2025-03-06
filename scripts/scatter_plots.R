@@ -80,6 +80,9 @@ colnames(all.res) = c("CHR", "POS", "M_P", "M_XtX", "XtXst", "COVARIABLE", "BF.d
 # remove redundant datasets
 rm(all.res_subset_BF, all.res_subset_spearman)
 
+# remoce low signal SNPs to lighten processing load
+all.res = all.res[all.res$BF.dB. > 5,]
+
 ############################################
 # Extract significant SNPs
 ############################################

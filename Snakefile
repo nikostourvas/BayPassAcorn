@@ -54,6 +54,7 @@ rule all:
         #expand("results/{sample}_C2_model_diagnostics.pdf", sample=SAMPLES),
         expand("results/{sample}_xtxst_pvalue_dist.pdf", sample=SAMPLES),
         expand("results/{sample}_concatenated_res_covariate.csv", sample=SAMPLES),
+        expand("results/{sample}_significant_snps.csv", sample=SAMPLES),        
         #expand("results/{sample}_concatenated_res_contrast.csv", sample=SAMPLES),
         expand("results/{sample}_scatterplots/{envfactor}_scatterplots.pdf", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
         # expand("data/WZA/{sample}_WZA_input.csv", sample=SAMPLES),
