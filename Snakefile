@@ -56,7 +56,6 @@ rule all:
         expand("results/{sample}_concatenated_res_covariate.csv", sample=SAMPLES),
         expand("results/{sample}_significant_snps.csv", sample=SAMPLES),        
         #expand("results/{sample}_concatenated_res_contrast.csv", sample=SAMPLES),
-        expand("results/{sample}_scatterplots/{envfactor}_scatterplots.pdf", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
         # expand("data/WZA/{sample}_WZA_input.csv", sample=SAMPLES),
         # expand("results/WZA_res/{sample}_{envfactor}_WZA_output.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
         # expand("results/WZA_res/{sample}_WZA_manhattan_plots.png", sample=SAMPLES),
@@ -284,7 +283,6 @@ rule gea_scatter_plots:
     output:
         BFvsSpearman = "results/{sample}_BFvsSpearman.png",
         significant_snps = "results/{sample}_significant_snps.csv",
-        scatterplots = expand("results/{{sample}}_scatterplots/{envfactor}_scatterplots.pdf", envfactor=ENVFACTOR_NAMES)
     script: "scripts/scatter_plots.R"
 
 rule concatenate_results_c2:

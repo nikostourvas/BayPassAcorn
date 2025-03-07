@@ -164,6 +164,11 @@ print("Data merged")
 fwrite(fulldata, snakemake@output[[2]])
 
 # Plot scatter plots of allele frequencies vs environmental values for each covariable and each chrom_pos
+    # create the output dir
+    # usually snakemake takes care of this. However if no singificant SNPs are found, creating the dir
+    # ourselves ensures that snakemake does not throw an error
+dir.create(snakemake@params[[3]], showWarnings = FALSE)
+
 for (covar in unique(fulldata$COVARIABLE)) { 
     covariable_dat = fulldata[fulldata$COVARIABLE == covar,]
     
