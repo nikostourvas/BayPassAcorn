@@ -58,6 +58,7 @@ rule all:
         #expand("results/{sample}_concatenated_res_contrast.csv", sample=SAMPLES),
         expand("data/WZA/{sample}_WZA_input.csv", sample=SAMPLES),
         expand("results/WZA_res/{sample}_{envfactor}_BF_WZA_output.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
+        expand("results/WZA_res/{sample}_{envfactor}_spearman_WZA_output.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
         expand("results/WZA_res/{sample}_WZA_manhattan_plots_BF.png", sample=SAMPLES),
         expand("results/WZA_res/{sample}_{envfactor}_WZA_output_fdr.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES)
 
