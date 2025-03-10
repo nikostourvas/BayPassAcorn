@@ -56,10 +56,10 @@ rule all:
         expand("results/{sample}_concatenated_res_covariate.csv", sample=SAMPLES),
         expand("results/{sample}_significant_snps.csv", sample=SAMPLES),        
         #expand("results/{sample}_concatenated_res_contrast.csv", sample=SAMPLES),
-        # expand("data/WZA/{sample}_WZA_input.csv", sample=SAMPLES),
-        # expand("results/WZA_res/{sample}_{envfactor}_WZA_output.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
-        # expand("results/WZA_res/{sample}_WZA_manhattan_plots.png", sample=SAMPLES),
-        # expand("results/WZA_res/{sample}_{envfactor}_WZA_output_fdr.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES)
+        expand("data/WZA/{sample}_WZA_input.csv", sample=SAMPLES),
+        expand("results/WZA_res/{sample}_{envfactor}_BF_WZA_output.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
+        expand("results/WZA_res/{sample}_WZA_manhattan_plots_BF.png", sample=SAMPLES),
+        expand("results/WZA_res/{sample}_{envfactor}_WZA_output_fdr.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES)
 
 rule generate_complementary_inputs:
     input:
@@ -261,12 +261,14 @@ rule concatenate_results_covariate:
         "logs/concatenate_results_covariate/{sample}.log"       
     output:
         covariateresults = "results/{sample}_concatenated_res_covariate.csv",
+        covariateresults_spearman = "results/{sample}_concatenated_res_covariate_spearman.csv",
         manhattanplot = "results/{sample}_manhattanplot_covariate.png",
     script: "scripts/concatenate_res2.R"
 
 rule gea_scatter_plots:
     input:
         covariateresults = "results/{sample}_concatenated_res_covariate.csv",
+        covariateresults_spearman = "results/{sample}_concatenated_res_covariate_spearman.csv",
         frequency_table = "data/{sample}_AlleleFrequencyTable.txt",
         envfactor_names = "data/{sample}_efile_envfactor_names",
         efile="data/{sample}_efile",
@@ -283,6 +285,7 @@ rule gea_scatter_plots:
     output:
         BFvsSpearman = "results/{sample}_BFvsSpearman.png",
         significant_snps = "results/{sample}_significant_snps.csv",
+        scatterplots = expand("results/{{sample}}_scatterplots/{envfactor}_scatterplots.pdf", envfactor=ENVFACTOR_NAMES)
     script: "scripts/scatter_plots.R"
 
 rule concatenate_results_c2:
@@ -305,8 +308,8 @@ rule concatenate_results_c2:
 rule prepare_WZA:
     input:
         covariateresults = "results/{sample}_concatenated_res_covariate.csv",
+        covariateresults_spearman = "results/{sample}_concatenated_res_covariate_spearman.csv",
         frequency_table = "data/{sample}_AlleleFrequencyTable.txt",
-        envfactor_names = "data/{sample}_efile_envfactor_names",
     params:
         window_size = WZA_WINDOW_SIZE,
     resources:
@@ -317,8 +320,7 @@ rule prepare_WZA:
         WZA_input = "data/WZA/{sample}_WZA_input.csv"
     shell:
         """
-        ( echo "$(head -1 {input.covariateresults} \
-            | cut -d',' -f1-5),$(paste -sd',' {input.envfactor_names})"; tail -n +2 {input.covariateresults} ) \
+        paste -d',' {input.covariateresults_spearman} <(cut -d ',' -f 6- {input.covariateresults}) \
             | awk -f scripts/Make_Genomic_Windows.sh -v window_size={params.window_size} > tmp1_{wildcards.sample}
 
         awk -f scripts/Calculate_Mean_MAF.sh {input.frequency_table} | cut -d',' -f3 > tmpMAF_{wildcards.sample}
@@ -335,24 +337,46 @@ rule WZA:
         mem_mb=RESOURCES["WZA"]["mem_mb"],
         slurm_partition=RESOURCES["WZA"]["slurm_partition"]
     output:
-        WZA_output = protected("results/WZA_res/{sample}_{envfactor}_WZA_output.csv"),
+        WZA_output_BF = protected("results/WZA_res/{sample}_{envfactor}_BF_WZA_output.csv"),
     shell:
         """
         python3 scripts/general_WZA_script.py \
             --correlations {input.WZA_input} \
-            --summary_stat {wildcards.envfactor} \
+            --summary_stat {wildcards.envfactor}_BF \
             --window window_id \
             --MAF MAF \
             --sep "," \
             --large_i_small_p \
             --retain POS \
-            --output {output.WZA_output}
+            --output {output.WZA_output_BF}
+        """
+
+rule WZA_spearman:
+    input:
+        WZA_input = "data/WZA/{sample}_WZA_input.csv",
+    resources:
+        runtime=RESOURCES["WZA"]["runtime"],
+        mem_mb=RESOURCES["WZA"]["mem_mb"],
+        slurm_partition=RESOURCES["WZA"]["slurm_partition"]
+    output:
+        WZA_output_spearman = protected("results/WZA_res/{sample}_{envfactor}_spearman_WZA_output.csv"),
+    shell:
+        """
+        python3 scripts/general_WZA_script.py \
+            --correlations {input.WZA_input} \
+            --summary_stat {wildcards.envfactor}_spearman \
+            --window window_id \
+            --MAF MAF \
+            --sep "," \
+            --large_i_small_p \
+            --retain POS \
+            --output {output.WZA_output_spearman}
         """
 
 rule WZA_diagnostics:
     input:
         envfactor_names = "data/{sample}_efile_envfactor_names",
-        WZA_output = expand("results/WZA_res/{{sample}}_{envfactor}_WZA_output.csv", envfactor=ENVFACTOR_NAMES),
+        WZA_output_BF = expand("results/WZA_res/{{sample}}_{envfactor}_BF_WZA_output.csv", envfactor=ENVFACTOR_NAMES),
     params:
         prefix = "results/WZA_res/{sample}_",
         FDR_level = WZA_FDR,
@@ -363,9 +387,13 @@ rule WZA_diagnostics:
     log:
         "logs/WZA_diagnostics/{sample}.log"
     output:
-        WZA_manhattan_plots = "results/WZA_res/{sample}_WZA_manhattan_plots.png",
-        WZA_manhattan_plots_wo_GIF = "results/WZA_res/{sample}_WZA_manhattan_plots_wo_GIF.png",
-        WZA_SNPs_per_window = "results/WZA_res/{sample}_WZA_SNPs_per_window.png",
-        WZA_SNP_pvalue_correlation = "results/WZA_res/{sample}_WZA_SNP_pvalue_correlation.png",    
-        WZA_output_fdr = protected(expand("results/WZA_res/{{sample}}_{envfactor}_WZA_output_fdr.csv", envfactor=ENVFACTOR_NAMES)),
+        WZA_manhattan_plots_BF = "results/WZA_res/{sample}_WZA_manhattan_plots_BF.png",
+        WZA_manhattan_plots_BF_wo_GIF = "results/WZA_res/{sample}_WZA_manhattan_plots_BF_wo_GIF.png",
+        WZA_manhattan_plots_spearman = "results/WZA_res/{sample}_WZA_manhattan_plots_spearman.png",
+        WZA_manhattan_plots_spearman_wo_GIF = "results/WZA_res/{sample}_WZA_manhattan_plots_spearman_wo_GIF.png",
+        WZA_significant_windows_a = "results/WZA_res/{sample}_significant_windows_q0.1.csv",
+        WZA_significant_windows_b = "results/WZA_res/{sample}_significant_windows_q0.05.csv",
+        WZA_significant_windows_c = "results/WZA_res/{sample}_significant_windows_q0.01.csv",
+        WZA_significant_windows_d = "results/WZA_res/{sample}_significant_windows_q0.001.csv",
+        WZA_output_fdr = expand("results/WZA_res/{{sample}}_{envfactor}_WZA_output_fdr.csv", envfactor=ENVFACTOR_NAMES)
     script: "scripts/WZA_diagnostics.R"

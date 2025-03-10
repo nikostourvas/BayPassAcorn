@@ -18,55 +18,30 @@ sink(log_conn, append = TRUE, type = "message")
 # Load the concatenated Baypass results
 ############################################
 
-all.res = fread(snakemake@input[[1]])
-print(paste("Loaded data with", ncol(all.res), "columns and", nrow(all.res), "rows"))
+all.res_subset_BF = fread(snakemake@input[[1]])
+print(paste("Loaded Bayes Factor data with", ncol(all.res_subset_BF), "columns and", 
+                                             nrow(all.res_subset_BF), "rows"))
+
+all.res_subset_spearman = fread(snakemake@input[[2]])
+print(paste("Loaded Spearman correlation data with", ncol(all.res_subset_spearman), "columns and", 
+                                                     nrow(all.res_subset_spearman), "rows"))
 
 # Data preprocessing
-all.res$CHR = as.factor(gsub("Qrob_Chr", "", all.res$CHR))
-all.res$CHR = as.factor(gsub("H2.3_", "H2.3.", all.res$CHR)) # Fix for contig names
-all.res$CHR = as.factor(gsub("^0", "", all.res$CHR))
-all.res$CHR = factor(all.res$CHR, levels=unique(all.res$CHR))
-all.res$CHR = as.numeric(all.res$CHR)
+# I set CHR and POS as integers. This is not great for contig names, 
+# but it was an easy way to sort chromosomes and contigs for plotting
+all.res_subset_BF$CHR = as.integer(all.res_subset_BF$CHR) # convert CHR to integer
+all.res_subset_BF$POS = as.integer(all.res_subset_BF$POS) # convert POS to integer
+all.res_subset_spearman$CHR = as.integer(all.res_subset_spearman$CHR) # convert CHR to integer
+all.res_subset_spearman$POS = as.integer(all.res_subset_spearman$POS) # convert POS to integer
 
 # Read environmental factor names
-envfactor_names = read.table(snakemake@input[[3]], h=F)
+envfactor_names = read.table(snakemake@input[[4]], h=F)
 print(paste("Found", nrow(envfactor_names), "environmental factors"))
 
-# Check if column count matches before renaming
-expected_cols = 5 + 2 * nrow(envfactor_names)  # CHR, POS, M_P, M_XtX, XtXst + BF and spearman columns
-if(ncol(all.res) != expected_cols) {
-  warning(paste("Expected", expected_cols, "columns but found", ncol(all.res)))
-  # If column counts don't match, print column names for debugging
-  print("Current column names:")
-  print(colnames(all.res))
-}
-
-# Column renaming with explicit length check
-new_colnames = c("CHR", "POS", "M_P", "M_XtX", "XtXst")
-bf_names = paste0(envfactor_names$V1, "_BF")
-spearman_names = paste0(envfactor_names$V1, "_spearman")
-new_colnames = c(new_colnames, bf_names, spearman_names)
-
-if(length(new_colnames) == ncol(all.res)) {
-  colnames(all.res) = new_colnames
-} else {
-  warning("Column count mismatch. Using existing column names.")
-}
-
-# Check for BF columns
-bf_cols = grep("_BF$", names(all.res), value=TRUE)
-if(length(bf_cols) == 0) {
-  stop("No BF columns found. Check column naming.")
-}
-
 # Generate tidy dataset
-print(paste("Found", length(bf_cols), "BF columns"))
-all.res_subset_BF = all.res[, c("CHR", "POS", "M_P", "M_XtX", "XtXst", bf_cols), with=FALSE]
-all.res_subset_spearman = all.res[, c("CHR", "POS", spearman_names), with=FALSE]
-
 all.res_subset_BF = melt(all.res_subset_BF, 
                id.vars=c("CHR", "POS", "M_P", "M_XtX", "XtXst"),
-               variable.name="COVARIABLE", value.name="BF.dB.")
+               variable.name="COVARIABLE", value.name="BF")
 # remove the "_BF" suffix from the COVARIABLE column
 all.res_subset_BF$COVARIABLE = gsub("_BF", "", all.res_subset_BF$COVARIABLE)
 
@@ -75,42 +50,36 @@ all.res_subset_spearman = melt(all.res_subset_spearman,
                variable.name="COVARIABLE", value.name="spearman_rho")
 
 all.res = cbind(all.res_subset_BF, all.res_subset_spearman$spearman_rho)
-colnames(all.res) = c("CHR", "POS", "M_P", "M_XtX", "XtXst", "COVARIABLE", "BF.dB.", "spearman_rho")
+colnames(all.res) = c("CHR", "POS", "M_P", "M_XtX", "XtXst", "COVARIABLE", "BF", "spearman_rho")
 
 # remove redundant datasets
 rm(all.res_subset_BF, all.res_subset_spearman)
 
 # remoce low signal SNPs to lighten processing load
-all.res = all.res[all.res$BF.dB. > 5,]
+all.res = all.res[all.res$BF > 5,]
 
 ############################################
 # Extract significant SNPs
 ############################################
-all.res$CHR = as.numeric(all.res$CHR)
-sig.snps = all.res[all.res$BF.dB. > snakemake@params[[1]] 
+all.res$CHR = as.integer(all.res$CHR)
+sig.snps = all.res[all.res$BF > snakemake@params[[1]] 
                    & abs(all.res$spearman_rho) >= snakemake@params[[2]], ]
 print(paste("Found", nrow(sig.snps), "significant SNPs"))
 
-# Exit early if no significant SNPs
+# Output the significant SNPs
+fwrite(sig.snps, snakemake@output[[2]])
+
+# Message if no significant SNPs
 if(nrow(sig.snps) == 0) {
   message("No SNPs exceed the BF threshold. Creating empty output files.")
-  # Create empty output files to satisfy Snakemake
-  for(covar in unique(envfactor_names$V1)) {
-    plot_filename <- paste0(snakemake@params[[3]], covar, "_scatterplots.pdf")
-    pdf(plot_filename, width=8, height=6)
-    plot(1, type="n", axes=FALSE, xlab="", ylab="")
-    text(1, 1, "No significant SNPs found", cex=1.5)
-    dev.off()
-  }
 }
 
 # Plot BF vs Spearman rho
-p = ggplot(all.res, aes(x=spearman_rho, y=BF.dB.)) +
+p = ggplot(all.res, aes(x=spearman_rho, y=BF)) +
   geom_point(alpha=0.5, color="darkblue") +
-  geom_point(alpha=0.5, data=sig.snps, aes(x=spearman_rho, y=BF.dB.), color="darkred") +
+  geom_point(alpha=0.5, data=sig.snps, aes(x=spearman_rho, y=BF), color="darkred") +
   geom_hline(yintercept = snakemake@params[[1]], linetype="dashed") +
   geom_vline(xintercept = snakemake@params[[2]], linetype="dashed") +
-  geom_vline(xintercept = -snakemake@params[[2]], linetype="dashed") +
   xlab("Spearman rho") + ylab("BF (db)") +
   theme_bw() +
   theme(legend.position = "none", plot.title = element_text(size = 8))
@@ -120,17 +89,17 @@ ggsave(snakemake@output[[1]], p, width = 8, height = 6, units = "in")
 ############################################
 # Load allele frequencies
 ############################################
-afs = fread(snakemake@input[[2]], header=TRUE)
+afs = fread(snakemake@input[[3]], header=TRUE)
 # Remove the "Qrob_Chr" prefix from the chrom_pos column
 afs[, chrom_pos := gsub("Qrob_Chr", "", chrom_pos)]
 afs[, chrom_pos := gsub("H2.3_", "H2.3.", chrom_pos)] # Fix for contig names
 # Split the chrom_pos column by the underscore ('_')
 afs[, c("CHR", "POS") := tstrsplit(chrom_pos, "_", keep = c(1, 2))]
 
-print("convert to numeric")
-# Convert the CHR and POS columns to numeric
-afs[, CHR := as.numeric(CHR)]
-afs[, POS := as.numeric(POS)]
+print("convert to integer")
+# Convert the CHR and POS columns to integer
+afs[, CHR := as.integer(CHR)]
+afs[, POS := as.integer(POS)]
 
 print("tidy data")
 # make it tidy
@@ -139,14 +108,15 @@ afs_tidy = reshape2::melt(afs, id.vars=c("chrom_pos", "CHR","POS"), variable.nam
 print("filter (merge) data")
 # Keep only the rows of afs that correspond to the significant SNPs based on the CHR and POS columns
 afs_tidy = merge(afs_tidy, sig.snps, by=c("CHR","POS"))
+print(paste0(str(afs_tidy)))
 
 print("AF data loaded")
 
 ############################################
 # Load environmental data
 ############################################
-env_factor_names = read.table(snakemake@input[[3]],h=F)
-env_factor_data = read.table(snakemake@input[[4]],h=F)
+env_factor_names = read.table(snakemake@input[[4]],h=F)
+env_factor_data = read.table(snakemake@input[[5]],h=F)
 env_factors = cbind(env_factor_names, env_factor_data)
 rm(env_factor_names, env_factor_data)
 colnames(env_factors) = c("COVARIABLE", colnames(afs)[2:(ncol(afs)-2)])
@@ -157,18 +127,20 @@ print("Environmental data loaded")
 
 # Merge environmental data with Allele Frequencies of significant SNPs
 fulldata = merge(afs_tidy, env_factors, by=c("COVARIABLE", "POP"))
+print(paste0(str(fulldata)))
 
 print("Data merged")
 
-# output the fulldata table
-fwrite(fulldata, snakemake@output[[2]])
+# Create empty output files to satisfy Snakemake
+for(covar in unique(envfactor_names$V1)) {
+plot_filename <- paste0(snakemake@params[[3]], covar, "_scatterplots.pdf")
+pdf(plot_filename, width=8, height=6)
+plot(1, type="n", axes=FALSE, xlab="", ylab="")
+text(1, 1, "No significant SNPs found", cex=1.5)
+dev.off()
+}
 
 # Plot scatter plots of allele frequencies vs environmental values for each covariable and each chrom_pos
-    # create the output dir
-    # usually snakemake takes care of this. However if no singificant SNPs are found, creating the dir
-    # ourselves ensures that snakemake does not throw an error
-dir.create(snakemake@params[[3]], showWarnings = FALSE)
-
 for (covar in unique(fulldata$COVARIABLE)) { 
     covariable_dat = fulldata[fulldata$COVARIABLE == covar,]
     
@@ -179,7 +151,7 @@ for (covar in unique(fulldata$COVARIABLE)) {
     
     # Reorder `facet_var` based on `order_var` (e.g., using mean as criterion)
     covariable_dat$chrom_pos <- fct_reorder(covariable_dat$chrom_pos, 
-                                            covariable_dat$BF.dB., 
+                                            covariable_dat$BF, 
                                             .fun = mean, .desc = TRUE)
 
     # Systematically subsample the SNP list to retain only 150 plots or less
@@ -196,7 +168,7 @@ for (covar in unique(fulldata$COVARIABLE)) {
         reframe(label_text = paste("M_P:", round(M_P, 2),"\n",
                                     "M_XtX:", round(M_XtX, 2),"\n",
                                     "XtXst:", round(XtXst, 2),"\n",
-                                    "BF.dB:", round(BF.dB., 2),"\n",
+                                    "BF.dB:", round(BF, 2),"\n",
                                     "rho:", round(spearman_rho, 2)))
     
     p = ggplot(covariable_dat, aes(x=env_value, y=AF)) +
