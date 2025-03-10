@@ -125,6 +125,13 @@ fwrite(WZA_sig0.001, snakemake@output[[8]])
 ############################
 print("Creating Manhattan plots")
 
+# Sort the CHR column properly
+# First remove prefixes from contig names
+WZA_res$CHR = gsub("^Qrob_H2.3.Sc00000", "", WZA_res$CHR)
+WZA_res$CHR = gsub("^Qrob_H2.3.Sc0000", "", WZA_res$CHR)
+# Then convert to numeric
+WZA_res$CHR = as.integer(WZA_res$CHR)
+
 # add a column with the calculated -log10(p-value)
 WZA_res$score = -log10(WZA_res$BF_gif_cor_pvalue)
 p <- ggplot(WZA_res, aes(x=POS, y=score, color=CHR)) + 
