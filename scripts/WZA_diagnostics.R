@@ -131,6 +131,10 @@ WZA_res$CHR = gsub("^Qrob_H2.3.Sc00000", "", WZA_res$CHR)
 WZA_res$CHR = gsub("^Qrob_H2.3.Sc0000", "", WZA_res$CHR)
 # Then convert to numeric
 WZA_res$CHR = as.integer(WZA_res$CHR)
+# Then convert back to factor with properly sorted levels
+# If I don't do this, scale_color_manual will not work properly
+WZA_res$CHR = factor(WZA_res$CHR, levels=as.character(sort(unique(WZA_res$CHR))))
+print(unique(WZA_res$CHR))
 
 # add a column with the calculated -log10(p-value)
 WZA_res$score = -log10(WZA_res$BF_gif_cor_pvalue)
