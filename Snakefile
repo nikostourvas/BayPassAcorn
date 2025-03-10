@@ -378,6 +378,7 @@ rule WZA_diagnostics:
     input:
         envfactor_names = "data/{sample}_efile_envfactor_names",
         WZA_output_BF = expand("results/WZA_res/{{sample}}_{envfactor}_BF_WZA_output.csv", envfactor=ENVFACTOR_NAMES),
+        WZA_output_spearman = expand("results/WZA_res/{{sample}}_{envfactor}_spearman_WZA_output.csv", envfactor=ENVFACTOR_NAMES),
     params:
         prefix = "results/WZA_res/{sample}_",
         FDR_level = WZA_FDR,
