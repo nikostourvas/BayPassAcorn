@@ -60,7 +60,7 @@ rule all:
         expand("results/WZA_res/{sample}_{envfactor}_BF_WZA_output.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
         expand("results/WZA_res/{sample}_{envfactor}_spearman_WZA_output.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
         expand("results/WZA_res/{sample}_WZA_manhattan_plots_BF.png", sample=SAMPLES),
-        expand("results/WZA_res/{sample}_{envfactor}_WZA_output_fdr.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES)
+        expand("results/WZA_res/{sample}_{envfactor}_WZA_output_fdr.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
 
 rule generate_complementary_inputs:
     input:
@@ -286,6 +286,10 @@ rule gea_scatter_plots:
     output:
         BFvsSpearman = "results/{sample}_BFvsSpearman.png",
         significant_snps = "results/{sample}_significant_snps.csv",
+        significant_snps_0_1 = "results/{sample}_significant_snps_top0_1_percent.csv",
+        significant_snps_1 = "results/{sample}_significant_snps_top1_percent.csv",
+        significant_snps_5 = "results/{sample}_significant_snps_top5_percent.csv",
+        significant_snps_10 = "results/{sample}_significant_snps_top10_percent.csv",
         scatterplots = expand("results/{{sample}}_scatterplots/{envfactor}_scatterplots.pdf", envfactor=ENVFACTOR_NAMES)
     script: "scripts/scatter_plots.R"
 
@@ -397,5 +401,9 @@ rule WZA_diagnostics:
         WZA_significant_windows_b = "results/WZA_res/{sample}_significant_windows_q0.05.csv",
         WZA_significant_windows_c = "results/WZA_res/{sample}_significant_windows_q0.01.csv",
         WZA_significant_windows_d = "results/WZA_res/{sample}_significant_windows_q0.001.csv",
+        WZA_p0_1 = "results/WZA_res/{sample}_significant_windows_p0_1.csv",
+        WZA_p0_05 = "results/WZA_res/{sample}_significant_windows_p0_05.csv",
+        WZA_p0_01 = "results/WZA_res/{sample}_significant_windows_p0_01.csv",
+        WZA_p0_001 = "results/WZA_res/{sample}_significant_windows_p0_001.csv",
         WZA_output_fdr = expand("results/WZA_res/{{sample}}_{envfactor}_WZA_output_fdr.csv", envfactor=ENVFACTOR_NAMES)
     script: "scripts/WZA_diagnostics.R"
