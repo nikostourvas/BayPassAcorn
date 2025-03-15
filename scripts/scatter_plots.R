@@ -6,6 +6,7 @@ library(dplyr)
 library(tidyr)
 library(gridExtra)
 library(forcats)
+library(viridis)
 
 # re-direct console output to a log file for use with snakemake on HPC
 # Open log file connection
@@ -76,13 +77,15 @@ if(nrow(sig.snps) == 0) {
 
 # Plot BF vs Spearman rho
 p = ggplot(all.res, aes(x=spearman_rho, y=BF)) +
-  geom_point(alpha=0.5, color="darkblue") +
-  geom_point(alpha=0.5, data=sig.snps, aes(x=spearman_rho, y=BF), color="darkred") +
+  geom_bin2d() +
+  #geom_point(alpha=0.5, color="darkblue") +
+  #geom_point(alpha=0.5, data=sig.snps, aes(x=spearman_rho, y=BF), color="darkred") +
   geom_hline(yintercept = snakemake@params[[1]], linetype="dashed") +
   geom_vline(xintercept = snakemake@params[[2]], linetype="dashed") +
   xlab("Spearman rho") + ylab("BF (db)") +
+  scale_fill_viridis() +
   theme_bw() +
-  theme(legend.position = "none", plot.title = element_text(size = 8))
+  theme(plot.title = element_text(size = 8))
 
 ggsave(snakemake@output[[1]], p, width = 8, height = 6, units = "in")
 
