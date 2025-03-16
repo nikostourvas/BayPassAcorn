@@ -26,6 +26,7 @@ N_PILOT = config["parameters"]["n_pilot"]
 BF_THRESHOLD = config["parameters"]["bf_threshold"]
 SPEARMAN_THRESHOLD = config["parameters"]["spearman_threshold"]
 WZA_WINDOW_SIZE = config["parameters"]["WZA_window_size"]
+WZA_MAF_THRESHOLD = config["parameters"]["WZA_maf_threshold"]
 WZA_FDR = config["parameters"]["WZA_fdr"]
 
 # Get resources from config file
@@ -57,6 +58,7 @@ rule all:
         expand("results/{sample}_significant_snps.csv", sample=SAMPLES),        
         #expand("results/{sample}_concatenated_res_contrast.csv", sample=SAMPLES),
         expand("data/WZA/{sample}_WZA_input.csv", sample=SAMPLES),
+        expand("data/WZA/{sample}_WZA_input_filtered.csv", sample=SAMPLES),
         expand("results/WZA_res/{sample}_{envfactor}_BF_WZA_output.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
         expand("results/WZA_res/{sample}_{envfactor}_spearman_WZA_output.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
         expand("results/WZA_res/{sample}_WZA_manhattan_plots_BF.png", sample=SAMPLES),
@@ -334,9 +336,19 @@ rule prepare_WZA:
         rm tmp1_{wildcards.sample} tmpMAF_{wildcards.sample}
         """
 
-rule WZA:
+rule filter_WZA_input:
     input:
         WZA_input = "data/WZA/{sample}_WZA_input.csv",
+    params:
+        wza_maf_threshold = WZA_MAF_THRESHOLD,
+    output:
+        WZA_input_filtered = "data/WZA/{sample}_WZA_input_filtered.csv"
+    script:
+        "scripts/filter_WZA_input.R"
+
+rule WZA:
+    input:
+        WZA_input_filtered = "data/WZA/{sample}_WZA_input_filtered.csv",
     resources:
         runtime=RESOURCES["WZA"]["runtime"],
         mem_mb=RESOURCES["WZA"]["mem_mb"],
@@ -346,19 +358,22 @@ rule WZA:
     shell:
         """
         python3 scripts/general_WZA_script.py \
-            --correlations {input.WZA_input} \
+            --correlations {input.WZA_input_filtered} \
             --summary_stat {wildcards.envfactor}_BF \
             --window window_id \
             --MAF MAF \
             --sep "," \
             --large_i_small_p \
+            --sample_snps 75 \
+            --resamples 100 \
+            --min_snps 3 \
             --retain POS \
             --output {output.WZA_output_BF}
         """
 
 rule WZA_spearman:
     input:
-        WZA_input = "data/WZA/{sample}_WZA_input.csv",
+        WZA_input_filtered = "data/WZA/{sample}_WZA_input_filtered.csv",
     resources:
         runtime=RESOURCES["WZA"]["runtime"],
         mem_mb=RESOURCES["WZA"]["mem_mb"],
@@ -368,12 +383,15 @@ rule WZA_spearman:
     shell:
         """
         python3 scripts/general_WZA_script.py \
-            --correlations {input.WZA_input} \
+            --correlations {input.WZA_input_filtered} \
             --summary_stat {wildcards.envfactor}_spearman \
             --window window_id \
             --MAF MAF \
             --sep "," \
             --large_i_small_p \
+            --sample_snps 75 \
+            --resamples 100 \
+            --min_snps 3 \
             --retain POS \
             --output {output.WZA_output_spearman}
         """
