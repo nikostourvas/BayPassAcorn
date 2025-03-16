@@ -28,12 +28,7 @@ print(paste("Loaded Spearman correlation data with", ncol(all.res_subset_spearma
                                                      nrow(all.res_subset_spearman), "rows"))
 
 # Data preprocessing
-# I set CHR and POS as integers. This is not great for contig names, 
-# but it was an easy way to sort chromosomes and contigs for plotting
-all.res_subset_BF$CHR = as.integer(all.res_subset_BF$CHR) # convert CHR to integer
-all.res_subset_BF$POS = as.integer(all.res_subset_BF$POS) # convert POS to integer
-all.res_subset_spearman$CHR = as.integer(all.res_subset_spearman$CHR) # convert CHR to integer
-all.res_subset_spearman$POS = as.integer(all.res_subset_spearman$POS) # convert POS to integer
+
 
 # Read environmental factor names
 envfactor_names = read.table(snakemake@input[[4]], h=F)
@@ -62,7 +57,6 @@ all.res = all.res[all.res$BF > 5,]
 ############################################
 # Extract significant SNPs
 ############################################
-all.res$CHR = as.integer(all.res$CHR)
 sig.snps = all.res[all.res$BF > snakemake@params[[1]] 
                    & abs(all.res$spearman_rho) >= snakemake@params[[2]], ]
 print(paste("Found", nrow(sig.snps), "significant SNPs"))
@@ -102,7 +96,7 @@ fwrite(sig.snps, snakemake@output[[6]])
 
 # Plot BF vs Spearman rho
 p = ggplot(all.res, aes(x=spearman_rho, y=BF)) +
-  geom_bin2d() +
+  geom_bin2d(bins=50) +
   #geom_point(alpha=0.5, color="darkblue") +
   #geom_point(alpha=0.5, data=sig.snps, aes(x=spearman_rho, y=BF), color="darkred") +
   geom_hline(yintercept = snakemake@params[[1]], linetype="dashed") +
@@ -117,6 +111,11 @@ ggsave(snakemake@output[[1]], p, width = 8, height = 6, units = "in")
 ############################################
 # Load allele frequencies
 ############################################
+# I set CHR and POS as integers. This is not great for contig names, 
+# but it was an easy way to sort chromosomes and contigs for plotting
+sig.snps$CHR = as.integer(sig.snps$CHR)
+sig.snps$POS = as.integer(sig.snps$POS)
+
 afs = fread(snakemake@input[[3]], header=TRUE)
 # Remove the "Qrob_Chr" prefix from the chrom_pos column
 afs[, chrom_pos := gsub("Qrob_Chr", "", chrom_pos)]
