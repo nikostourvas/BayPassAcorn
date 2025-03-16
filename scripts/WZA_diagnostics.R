@@ -120,17 +120,21 @@ fwrite(WZA_sig0.01, snakemake@output[[7]])
 WZA_sig0.001 = WZA_res[WZA_res$BF_qvalue_gif_adj < 0.001 & WZA_res$spearman_qvalue_gif_adj < 0.001,]
 fwrite(WZA_sig0.001, snakemake@output[[8]])
 
-WZA_p0.1 = WZA_res[WZA_res$BF_pvalue < 0.1 & WZA_res$spearman_pvalue < 0.1,]
-fwrite(WZA_p0.1, snakemake@output[[9]])
+WZA_top0.1 = WZA_res[WZA_res$BF_pvalue < quantile(WZA_res$BF_pvalue, 0.1) 
+                      & WZA_res$spearman_pvalue < quantile(WZA_res$spearman_pvalue, 0.1),]
+fwrite(WZA_top0.1, snakemake@output[[9]])
 
-WZA_p0.05 = WZA_res[WZA_res$BF_pvalue < 0.05 & WZA_res$spearman_pvalue < 0.05,]
-fwrite(WZA_p0.05, snakemake@output[[10]])
+WZA_top0.05 = WZA_res[WZA_res$BF_pvalue < quantile(WZA_res$BF_pvalue, 0.05) 
+                      & WZA_res$spearman_pvalue < quantile(WZA_res$spearman_pvalue, 0.05),]
+fwrite(WZA_top0.05, snakemake@output[[10]])
 
-WZA_p0.01 = WZA_res[WZA_res$BF_pvalue < 0.01 & WZA_res$spearman_pvalue < 0.01,]
-fwrite(WZA_p0.01, snakemake@output[[11]])
+WZA_top0.01 = WZA_res[WZA_res$BF_pvalue < quantile(WZA_res$BF_pvalue, 0.01) 
+                      & WZA_res$spearman_pvalue < quantile(WZA_res$spearman_pvalue, 0.01),]
+fwrite(WZA_top0.01, snakemake@output[[11]])
 
-WZA_p0.001 = WZA_res[WZA_res$BF_pvalue < 0.001 & WZA_res$spearman_pvalue < 0.001,]
-fwrite(WZA_p0.001, snakemake@output[[12]])
+WZA_top0.001 = WZA_res[WZA_res$BF_pvalue < quantile(WZA_res$BF_pvalue, 0.001) 
+                      & WZA_res$spearman_pvalue < quantile(WZA_res$spearman_pvalue, 0.001),]
+fwrite(WZA_top0.001, snakemake@output[[12]])
 
 ############################
 # Manhattan plots
