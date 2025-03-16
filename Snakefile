@@ -401,9 +401,9 @@ rule WZA_diagnostics:
         WZA_significant_windows_b = "results/WZA_res/{sample}_significant_windows_q0.05.csv",
         WZA_significant_windows_c = "results/WZA_res/{sample}_significant_windows_q0.01.csv",
         WZA_significant_windows_d = "results/WZA_res/{sample}_significant_windows_q0.001.csv",
-        WZA_p0_1 = "results/WZA_res/{sample}_significant_windows_p0_1.csv",
-        WZA_p0_05 = "results/WZA_res/{sample}_significant_windows_p0_05.csv",
-        WZA_p0_01 = "results/WZA_res/{sample}_significant_windows_p0_01.csv",
-        WZA_p0_001 = "results/WZA_res/{sample}_significant_windows_p0_001.csv",
+        WZA_top0_1 = "results/WZA_res/{sample}_significant_windows_top0_1.csv",
+        WZA_top0_05 = "results/WZA_res/{sample}_significant_windows_top0_05.csv",
+        WZA_top0_01 = "results/WZA_res/{sample}_significant_windows_top0_01.csv",
+        WZA_top0_001 = "results/WZA_res/{sample}_significant_windows_top0_001.csv",
         WZA_output_fdr = expand("results/WZA_res/{{sample}}_{envfactor}_WZA_output_fdr.csv", envfactor=ENVFACTOR_NAMES)
     script: "scripts/WZA_diagnostics.R"
