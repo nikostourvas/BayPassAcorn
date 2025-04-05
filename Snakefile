@@ -57,12 +57,12 @@ rule all:
         expand("results/{sample}_concatenated_res_covariate.csv", sample=SAMPLES),
         expand("results/{sample}_significant_snps.csv", sample=SAMPLES),        
         #expand("results/{sample}_concatenated_res_contrast.csv", sample=SAMPLES),
-        # expand("data/WZA/{sample}_WZA_input.csv", sample=SAMPLES),
-        # expand("data/WZA/{sample}_WZA_input_filtered.csv", sample=SAMPLES),
-        # expand("results/WZA_res/{sample}_{envfactor}_BF_WZA_output.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
-        # expand("results/WZA_res/{sample}_{envfactor}_spearman_WZA_output.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
-        # expand("results/WZA_res/{sample}_WZA_manhattan_plots_BF.png", sample=SAMPLES),
-        # expand("results/WZA_res/{sample}_{envfactor}_WZA_output_fdr.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
+        expand("data/WZA/{sample}_WZA_input.csv", sample=SAMPLES),
+        expand("data/WZA/{sample}_WZA_input_filtered.csv", sample=SAMPLES),
+        expand("results/WZA_res/{sample}_{envfactor}_BF_WZA_output.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
+        expand("results/WZA_res/{sample}_{envfactor}_spearman_WZA_output.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
+        expand("results/WZA_res/{sample}_WZA_manhattan_plots_BF.png", sample=SAMPLES),
+        expand("results/WZA_res/{sample}_{envfactor}_WZA_output_fdr.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
 
 rule generate_complementary_inputs:
     input:
@@ -424,5 +424,9 @@ rule WZA_diagnostics:
         WZA_top0_05 = "results/WZA_res/{sample}_significant_windows_top0_05.csv",
         WZA_top0_01 = "results/WZA_res/{sample}_significant_windows_top0_01.csv",
         WZA_top0_001 = "results/WZA_res/{sample}_significant_windows_top0_001.csv",
+        WZA_q0_01_rho_top2_5 = "results/WZA_res/{sample}_significant_windows_q0.01_rho_top2_5.csv",
+        WZA_q0_01_rho_top1 = "results/WZA_res/{sample}_significant_windows_q0.01_rho_top1.csv",
+        WZA_q0_001_rho_top2_5 = "results/WZA_res/{sample}_significant_windows_q0.001_rho_top2_5.csv",
+        WZA_q0_001_rho_top1 = "results/WZA_res/{sample}_significant_windows_q0.001_rho_top1.csv",
         WZA_output_fdr = expand("results/WZA_res/{{sample}}_{envfactor}_WZA_output_fdr.csv", envfactor=ENVFACTOR_NAMES)
     script: "scripts/WZA_diagnostics.R"
