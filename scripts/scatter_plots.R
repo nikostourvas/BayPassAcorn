@@ -69,30 +69,51 @@ if(nrow(sig.snps) == 0) {
   message("No SNPs exceed the BF threshold. Creating empty output files.")
 }
 
+# Define significant SNPs by using the pre-defined threshold for the BF values and the top 2.5% of the Spearman rho values.
+# This analysis should be performed separately for each environmental factor (COVARIABLE).
+all.res <- as.data.table(all.res)
+sig.snps <- all.res[, .SD[ BF > snakemake@params[[1]] & 
+                        abs(spearman_rho) > quantile(abs(spearman_rho), 0.975)
+                      ], 
+                 by = COVARIABLE]
+print(paste("Found", nrow(sig.snps), "significant SNPs at the 2.5% level"))
+fwrite(sig.snps, snakemake@output[[3]])
+
+# Define significant SNPs by using the pre-defined threshold for the BF values and the top 1% of the Spearman rho values.
+sig.snps = all.res[all.res$BF > snakemake@params[[1]] 
+                    & abs(all.res$spearman_rho) > quantile(abs(all.res$spearman_rho), 0.99), ]
+print(paste("Found", nrow(sig.snps), "significant SNPs at the 1% level"))
+fwrite(sig.snps, snakemake@output[[4]])
+
+# Define significant SNPs by using the pre-defined threshold for the BF values and the top 0.1% of the Spearman rho values.
+sig.snps = all.res[all.res$BF > snakemake@params[[1]] 
+                    & abs(all.res$spearman_rho) > quantile(abs(all.res$spearman_rho), 0.999), ]
+print(paste("Found", nrow(sig.snps), "significant SNPs at the 0.1% level"))
+fwrite(sig.snps, snakemake@output[[5]])
 
 # Define significant SNPs by using the top 0.1% of the BF values and the top 0.1% of the Spearman rho values
 sig.snps = all.res[all.res$BF > quantile(all.res$BF, 0.999) 
                     & abs(all.res$spearman_rho) > quantile(abs(all.res$spearman_rho), 0.999), ]
 print(paste("Found", nrow(sig.snps), "significant SNPs at the 0.1% level"))
-fwrite(sig.snps, snakemake@output[[3]])
+fwrite(sig.snps, snakemake@output[[6]])
 
 # Define significant SNPs by using the top 1% of the BF values and the top 1% of the Spearman rho values
 sig.snps = all.res[all.res$BF > quantile(all.res$BF, 0.99) 
                     & abs(all.res$spearman_rho) > quantile(abs(all.res$spearman_rho), 0.99), ]
 print(paste("Found", nrow(sig.snps), "significant SNPs at the 1% level"))
-fwrite(sig.snps, snakemake@output[[4]])
+fwrite(sig.snps, snakemake@output[[7]])
 
 # Define significant SNPs by using the top 5% of the BF values and the top 5% of the Spearman rho values
 sig.snps = all.res[all.res$BF > quantile(all.res$BF, 0.95) 
                     & abs(all.res$spearman_rho) > quantile(abs(all.res$spearman_rho), 0.95), ]
 print(paste("Found", nrow(sig.snps), "significant SNPs at the 5% level"))
-fwrite(sig.snps, snakemake@output[[5]])
+fwrite(sig.snps, snakemake@output[[8]])
 
 # Define significant SNPs by using the top 10% of the BF values and the top 10% of the Spearman rho values
 sig.snps = all.res[all.res$BF > quantile(all.res$BF, 0.90) 
                     & abs(all.res$spearman_rho) > quantile(abs(all.res$spearman_rho), 0.90), ]
 print(paste("Found", nrow(sig.snps), "significant SNPs at the 10% level"))
-fwrite(sig.snps, snakemake@output[[6]])
+fwrite(sig.snps, snakemake@output[[9]])
 
 # Plot BF vs Spearman rho
 p = ggplot(all.res, aes(x=spearman_rho, y=BF)) +

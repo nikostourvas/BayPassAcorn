@@ -57,12 +57,12 @@ rule all:
         expand("results/{sample}_concatenated_res_covariate.csv", sample=SAMPLES),
         expand("results/{sample}_significant_snps.csv", sample=SAMPLES),        
         #expand("results/{sample}_concatenated_res_contrast.csv", sample=SAMPLES),
-        expand("data/WZA/{sample}_WZA_input.csv", sample=SAMPLES),
-        expand("data/WZA/{sample}_WZA_input_filtered.csv", sample=SAMPLES),
-        expand("results/WZA_res/{sample}_{envfactor}_BF_WZA_output.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
-        expand("results/WZA_res/{sample}_{envfactor}_spearman_WZA_output.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
-        expand("results/WZA_res/{sample}_WZA_manhattan_plots_BF.png", sample=SAMPLES),
-        expand("results/WZA_res/{sample}_{envfactor}_WZA_output_fdr.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
+        # expand("data/WZA/{sample}_WZA_input.csv", sample=SAMPLES),
+        # expand("data/WZA/{sample}_WZA_input_filtered.csv", sample=SAMPLES),
+        # expand("results/WZA_res/{sample}_{envfactor}_BF_WZA_output.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
+        # expand("results/WZA_res/{sample}_{envfactor}_spearman_WZA_output.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
+        # expand("results/WZA_res/{sample}_WZA_manhattan_plots_BF.png", sample=SAMPLES),
+        # expand("results/WZA_res/{sample}_{envfactor}_WZA_output_fdr.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
 
 rule generate_complementary_inputs:
     input:
@@ -288,6 +288,9 @@ rule gea_scatter_plots:
     output:
         BFvsSpearman = "results/{sample}_BFvsSpearman.png",
         significant_snps = "results/{sample}_significant_snps.csv",
+        significant_snps_bf_spearman2_5 = "results/{sample}_significant_snps_bf_spearman2_5.csv",
+        significant_snps_bf_spearman1 = "results/{sample}_significant_snps_bf_spearman1.csv",
+        significant_snps_bf_spearman0_1 = "results/{sample}_significant_snps_bf_spearman0_1.csv",
         significant_snps_0_1 = "results/{sample}_significant_snps_top0_1_percent.csv",
         significant_snps_1 = "results/{sample}_significant_snps_top1_percent.csv",
         significant_snps_5 = "results/{sample}_significant_snps_top5_percent.csv",
@@ -354,7 +357,7 @@ rule WZA:
         mem_mb=RESOURCES["WZA"]["mem_mb"],
         slurm_partition=RESOURCES["WZA"]["slurm_partition"]
     output:
-        WZA_output_BF = protected("results/WZA_res/{sample}_{envfactor}_BF_WZA_output.csv"),
+        WZA_output_BF = "results/WZA_res/{sample}_{envfactor}_BF_WZA_output.csv",
     shell:
         """
         python3 scripts/general_WZA_script.py \
@@ -368,6 +371,7 @@ rule WZA:
             --resamples 100 \
             --min_snps 3 \
             --retain POS \
+            --verbose \
             --output {output.WZA_output_BF}
         """
 
@@ -379,7 +383,7 @@ rule WZA_spearman:
         mem_mb=RESOURCES["WZA"]["mem_mb"],
         slurm_partition=RESOURCES["WZA"]["slurm_partition"]
     output:
-        WZA_output_spearman = protected("results/WZA_res/{sample}_{envfactor}_spearman_WZA_output.csv"),
+        WZA_output_spearman = "results/WZA_res/{sample}_{envfactor}_spearman_WZA_output.csv",
     shell:
         """
         python3 scripts/general_WZA_script.py \
@@ -393,6 +397,7 @@ rule WZA_spearman:
             --resamples 100 \
             --min_snps 3 \
             --retain POS \
+            --verbose \
             --output {output.WZA_output_spearman}
         """
 
