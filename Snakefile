@@ -367,8 +367,6 @@ rule WZA:
             --MAF MAF \
             --sep "," \
             --large_i_small_p \
-            --sample_snps 75 \
-            --resamples 100 \
             --min_snps 3 \
             --retain POS \
             --verbose \
@@ -393,8 +391,6 @@ rule WZA_spearman:
             --MAF MAF \
             --sep "," \
             --large_i_small_p \
-            --sample_snps 75 \
-            --resamples 100 \
             --min_snps 3 \
             --retain POS \
             --verbose \
