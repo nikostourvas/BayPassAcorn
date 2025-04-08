@@ -98,11 +98,11 @@ print(head(WZA_res))
 
 print("string manipulation")
 # remove from rows of the column WZA_res$index the suffix "_window_" and anything after that
-WZA_res$index = as.factor(gsub("_window_.*", "", WZA_res$index))
+WZA_res$CHR = as.factor(gsub("_window_.*", "", WZA_res$index))
 
-colnames(WZA_res) = c("CHR", "POS", "envfactor", 
+colnames(WZA_res) = c("index", "POS", "envfactor", 
                       "BF_pvalue", "spearman_pvalue", "BF_gif_cor_pvalue", "spearman_gif_cor_pvalue", 
-                      "BF_qvalue", "spearman_qvalue", "BF_qvalue_gif_adj", "spearman_qvalue_gif_adj")
+                      "BF_qvalue", "spearman_qvalue", "BF_qvalue_gif_adj", "spearman_qvalue_gif_adj", "CHR")
 
 WZA_res$CHR = factor(WZA_res$CHR, levels=unique(WZA_res$CHR))
 
