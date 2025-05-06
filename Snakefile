@@ -25,6 +25,7 @@ MIN_HAPLOID_POOL_SIZE = config["parameters"]["min_haploid_pool_size"]
 N_PILOT = config["parameters"]["n_pilot"]
 BF_THRESHOLD = config["parameters"]["bf_threshold"]
 SPEARMAN_THRESHOLD = config["parameters"]["spearman_threshold"]
+WZA_CHUNKS = config["parameters"]["WZA_chunks"]
 WZA_WINDOW_SIZE = config["parameters"]["WZA_window_size"]
 WZA_MAF_THRESHOLD = config["parameters"]["WZA_maf_threshold"]
 WZA_FDR = config["parameters"]["WZA_fdr"]
@@ -58,7 +59,6 @@ rule all:
         expand("results/{sample}_significant_snps.csv", sample=SAMPLES),        
         #expand("results/{sample}_concatenated_res_contrast.csv", sample=SAMPLES),
         expand("data/WZA/{sample}_WZA_input.csv", sample=SAMPLES),
-        expand("data/WZA/{sample}_WZA_input_filtered.csv", sample=SAMPLES),
         expand("results/WZA_res/{sample}_{envfactor}_BF_WZA_output.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
         expand("results/WZA_res/{sample}_{envfactor}_spearman_WZA_output.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
         expand("results/WZA_res/{sample}_WZA_manhattan_plots_BF.png", sample=SAMPLES),
@@ -344,24 +344,26 @@ rule filter_WZA_input:
         WZA_input = "data/WZA/{sample}_WZA_input.csv",
     params:
         wza_maf_threshold = WZA_MAF_THRESHOLD,
+        chunks = WZA_CHUNKS,
+        sample = SAMPLES,
     output:
-        WZA_input_filtered = "data/WZA/{sample}_WZA_input_filtered.csv"
+        WZA_input_filtered_chunks=temp(["data/WZA/{{sample}}_WZA_input_filtered_chunk{}.csv".format(chunk) for chunk in range(1, WZA_CHUNKS+1)]),   
     script:
         "scripts/filter_WZA_input.R"
 
 rule WZA:
     input:
-        WZA_input_filtered = "data/WZA/{sample}_WZA_input_filtered.csv",
+        WZA_input_filtered_chunks = "data/WZA/{sample}_WZA_input_filtered_chunk{chunk}.csv",
     resources:
         runtime=RESOURCES["WZA"]["runtime"],
         mem_mb=RESOURCES["WZA"]["mem_mb"],
         slurm_partition=RESOURCES["WZA"]["slurm_partition"]
     output:
-        WZA_output_BF = "results/WZA_res/{sample}_{envfactor}_BF_WZA_output.csv",
+        WZA_output_BF_chunks = "results/WZA_res/{sample}_{envfactor}_BF_WZA_output_{chunk}.csv",
     shell:
         """
         python3 scripts/general_WZA_script.py \
-            --correlations {input.WZA_input_filtered} \
+            --correlations {input.WZA_input_filtered_chunks} \
             --summary_stat {wildcards.envfactor}_BF \
             --window window_id \
             --MAF MAF \
@@ -369,23 +371,37 @@ rule WZA:
             --large_i_small_p \
             --min_snps 3 \
             --retain POS \
-            --verbose \
-            --output {output.WZA_output_BF}
+            --output {output.WZA_output_BF_chunks}
         """
+
+rule concatenate_WZA_chunks:
+    input:
+        WZA_output_BF_chunks = expand("results/WZA_res/{{sample}}_{{envfactor}}_BF_WZA_output_{chunk}.csv", 
+                                 chunk=range(1, WZA_CHUNKS+1))
+    output:
+        WZA_output_BF = "results/WZA_res/{sample}_{envfactor}_BF_WZA_output.csv"
+    params:
+        chunks = WZA_CHUNKS,
+        sample = SAMPLES,
+        envfactor = ENVFACTOR_NAMES,
+    log:
+        "logs/concatenate_WZA_chunks/{sample}_{envfactor}.log"
+    script:
+        "scripts/concatenate_WZA_chunks.R"
 
 rule WZA_spearman:
     input:
-        WZA_input_filtered = "data/WZA/{sample}_WZA_input_filtered.csv",
+        WZA_input_filtered_chunks = "data/WZA/{sample}_WZA_input_filtered_chunk{chunk}.csv",
     resources:
         runtime=RESOURCES["WZA"]["runtime"],
         mem_mb=RESOURCES["WZA"]["mem_mb"],
         slurm_partition=RESOURCES["WZA"]["slurm_partition"]
     output:
-        WZA_output_spearman = "results/WZA_res/{sample}_{envfactor}_spearman_WZA_output.csv",
+        WZA_output_spearman_chunks = "results/WZA_res/{sample}_{envfactor}_spearman_WZA_output_{chunk}.csv",
     shell:
         """
         python3 scripts/general_WZA_script.py \
-            --correlations {input.WZA_input_filtered} \
+            --correlations {input.WZA_input_filtered_chunks} \
             --summary_stat {wildcards.envfactor}_spearman \
             --window window_id \
             --MAF MAF \
@@ -393,9 +409,23 @@ rule WZA_spearman:
             --large_i_small_p \
             --min_snps 3 \
             --retain POS \
-            --verbose \
-            --output {output.WZA_output_spearman}
+            --output {output.WZA_output_spearman_chunks}
         """
+
+rule concatenate_WZA_spearman_chunks:
+    input:
+        WZA_output_spearman_chunks = expand("results/WZA_res/{{sample}}_{{envfactor}}_spearman_WZA_output_{chunk}.csv", 
+                                 chunk=range(1, WZA_CHUNKS+1))
+    output:
+        WZA_output_spearman = "results/WZA_res/{sample}_{envfactor}_spearman_WZA_output.csv"
+    params:
+        chunks = WZA_CHUNKS,
+        sample = SAMPLES,
+        envfactor = ENVFACTOR_NAMES,
+    log:
+        "logs/concatenate_WZA_spearman_chunks/{sample}_{envfactor}.log"
+    script:
+        "scripts/concatenate_WZA_chunks.R"
 
 rule WZA_diagnostics:
     input:

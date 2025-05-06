@@ -25,6 +25,7 @@ parameters:
   n_pilot: 20  # Number of pilot runs
   bf_threshold: 0  # Bayes factor threshold
   spearman_threshold: 0.3  # Spearman correlation
+  WZA_chunks: 50  # Number of chunks for the WZA
   WZA_window_size: 1000  # Window size for the WZA
   WZA_maf_threshold: 0.05  # Minor allele frequency threshold for the WZA
   WZA_fdr: 0.05  # False discovery rate for the WZA
