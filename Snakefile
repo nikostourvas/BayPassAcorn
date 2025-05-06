@@ -59,6 +59,7 @@ rule all:
         expand("results/{sample}_significant_snps.csv", sample=SAMPLES),        
         #expand("results/{sample}_concatenated_res_contrast.csv", sample=SAMPLES),
         expand("data/WZA/{sample}_WZA_input.csv", sample=SAMPLES),
+        #expand("data/WZA/{sample}_WZA_input_filtered_chunk{chunk}.csv", sample=SAMPLES, chunk=range(1, WZA_CHUNKS+1)),
         expand("results/WZA_res/{sample}_{envfactor}_BF_WZA_output.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
         expand("results/WZA_res/{sample}_{envfactor}_spearman_WZA_output.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
         expand("results/WZA_res/{sample}_WZA_manhattan_plots_BF.png", sample=SAMPLES),
@@ -345,7 +346,13 @@ rule filter_WZA_input:
     params:
         wza_maf_threshold = WZA_MAF_THRESHOLD,
         chunks = WZA_CHUNKS,
-        sample = SAMPLES,
+        sample = "{sample}",
+    resources:
+        runtime=RESOURCES["filter_WZA_input"]["runtime"],
+        mem_mb=RESOURCES["filter_WZA_input"]["mem_mb"],
+        slurm_partition=RESOURCES["filter_WZA_input"]["slurm_partition"]
+    log:
+        "logs/filter_WZA_input/{sample}.log"
     output:
         WZA_input_filtered_chunks=temp(["data/WZA/{{sample}}_WZA_input_filtered_chunk{}.csv".format(chunk) for chunk in range(1, WZA_CHUNKS+1)]),   
     script:
@@ -382,8 +389,12 @@ rule concatenate_WZA_chunks:
         WZA_output_BF = "results/WZA_res/{sample}_{envfactor}_BF_WZA_output.csv"
     params:
         chunks = WZA_CHUNKS,
-        sample = SAMPLES,
+        sample = "{sample}",
         envfactor = ENVFACTOR_NAMES,
+    resources:
+        runtime=RESOURCES["concatenate_WZA_chunks"]["runtime"],
+        mem_mb=RESOURCES["concatenate_WZA_chunks"]["mem_mb"],
+        slurm_partition=RESOURCES["concatenate_WZA_chunks"]["slurm_partition"]
     log:
         "logs/concatenate_WZA_chunks/{sample}_{envfactor}.log"
     script:
@@ -420,8 +431,12 @@ rule concatenate_WZA_spearman_chunks:
         WZA_output_spearman = "results/WZA_res/{sample}_{envfactor}_spearman_WZA_output.csv"
     params:
         chunks = WZA_CHUNKS,
-        sample = SAMPLES,
+        sample = "{sample}",
         envfactor = ENVFACTOR_NAMES,
+    resources:
+        runtime=RESOURCES["concatenate_WZA_chunks"]["runtime"],
+        mem_mb=RESOURCES["concatenate_WZA_chunks"]["mem_mb"],
+        slurm_partition=RESOURCES["concatenate_WZA_chunks"]["slurm_partition"]
     log:
         "logs/concatenate_WZA_spearman_chunks/{sample}_{envfactor}.log"
     script:

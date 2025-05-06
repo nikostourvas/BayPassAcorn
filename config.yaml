@@ -75,9 +75,17 @@ resources:
     runtime: 40
     mem_mb: 8000
     slurm_partition: "batch"
+  filter_WZA_input:
+    runtime: 15
+    mem_mb: 128000
+    slurm_partition: "batch"
   WZA:
     runtime: 60
-    mem_mb: 100000
+    mem_mb: 125000
+    slurm_partition: "batch"
+  concatenate_WZA_chunks:
+    runtime: 120
+    mem_mb: 120000
     slurm_partition: "batch"
   WZA_diagnostics:
     runtime: 30
