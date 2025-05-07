@@ -468,5 +468,9 @@ rule WZA_diagnostics:
         WZA_q0_01_rho_top1 = "results/WZA_res/{sample}_significant_windows_q0.01_rho_top1.csv",
         WZA_q0_001_rho_top2_5 = "results/WZA_res/{sample}_significant_windows_q0.001_rho_top2_5.csv",
         WZA_q0_001_rho_top1 = "results/WZA_res/{sample}_significant_windows_q0.001_rho_top1.csv",
+        WZA_top0_1_BF = "results/WZA_res/{sample}_significant_windows_top0_1_BF.csv",
+        WZA_top0_05_BF = "results/WZA_res/{sample}_significant_windows_top0_05_BF.csv",
+        WZA_top0_01_BF = "results/WZA_res/{sample}_significant_windows_top0_01_BF.csv",
+        WZA_top0_001_BF = "results/WZA_res/{sample}_significant_windows_top0_001_BF.csv",
         WZA_output_fdr = expand("results/WZA_res/{{sample}}_{envfactor}_WZA_output_fdr.csv", envfactor=ENVFACTOR_NAMES)
     script: "scripts/WZA_diagnostics.R"

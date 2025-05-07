@@ -123,49 +123,62 @@ fwrite(WZA_sig0.001, snakemake@output[[8]])
 # Make sure the data set is a data.table
 WZA_res = as.data.table(WZA_res)
 # The following filters should be applied separately for each environmental factor
-WZA_top0.1 = WZA_res[, .SD[BF_pvalue > quantile(BF_pvalue, 0.9) 
-                      & spearman_pvalue > quantile(spearman_pvalue, 0.9)], 
+WZA_top0.1 = WZA_res[, .SD[BF_pvalue < quantile(BF_pvalue, 0.1) 
+                      & spearman_pvalue < quantile(spearman_pvalue, 0.1)], 
                  by = envfactor]
 fwrite(WZA_top0.1, snakemake@output[[9]])
 
-WZA_top0.05 = WZA_res[, .SD[BF_pvalue > quantile(BF_pvalue, 0.95) 
-                      & spearman_pvalue > quantile(spearman_pvalue, 0.95)], 
+WZA_top0.05 = WZA_res[, .SD[BF_pvalue < quantile(BF_pvalue, 0.05) 
+                      & spearman_pvalue < quantile(spearman_pvalue, 0.05)], 
                  by = envfactor]
 fwrite(WZA_top0.05, snakemake@output[[10]])
 
-WZA_top0.01 = WZA_res[, .SD[BF_pvalue > quantile(BF_pvalue, 0.99) 
-                      & spearman_pvalue > quantile(spearman_pvalue, 0.99)], 
+WZA_top0.01 = WZA_res[, .SD[BF_pvalue < quantile(BF_pvalue, 0.01) 
+                      & spearman_pvalue < quantile(spearman_pvalue, 0.01)], 
                  by = envfactor]
 fwrite(WZA_top0.01, snakemake@output[[11]])
 
-WZA_top0.001 = WZA_res[, .SD[BF_pvalue > quantile(BF_pvalue, 0.999) 
-                      & spearman_pvalue > quantile(spearman_pvalue, 0.999)], 
+WZA_top0.001 = WZA_res[, .SD[BF_pvalue < quantile(BF_pvalue, 0.001) 
+                      & spearman_pvalue < quantile(spearman_pvalue, 0.001)], 
                  by = envfactor]
 fwrite(WZA_top0.001, snakemake@output[[12]])
 
-# Keep only the significant windows for BF (BF_qvalue_gif_adj < 0.01) and Spearman (quantile spearman_pvalue, 0.975)
+# Keep only the significant windows for BF (BF_qvalue_gif_adj < 0.01) and Spearman (quantile spearman_pvalue, 0.025)
 WZA_sig0.1 = WZA_res[, .SD[BF_qvalue_gif_adj < 0.01 
-                      & spearman_pvalue > quantile(spearman_pvalue, 0.975)], 
+                      & spearman_pvalue < quantile(spearman_pvalue, 0.025)], 
                  by = envfactor]
 fwrite(WZA_sig0.1, snakemake@output[[13]])
 
-# Keep only the significant windows for BF (BF_qvalue_gif_adj < 0.01) and Spearman (quantile spearman_pvalue, 0.99)
+# Keep only the significant windows for BF (BF_qvalue_gif_adj < 0.01) and Spearman (quantile spearman_pvalue, 0.01)
 WZA_sig0.1 = WZA_res[, .SD[BF_qvalue_gif_adj < 0.01 
-                      & spearman_pvalue > quantile(spearman_pvalue, 0.99)], 
+                      & spearman_pvalue < quantile(spearman_pvalue, 0.01)], 
                  by = envfactor]
 fwrite(WZA_sig0.1, snakemake@output[[14]])
 
-# Keep only the significant windows for BF (BF_qvalue_gif_adj < 0.001) and Spearman (quantile spearman_pvalue, 0.975)
+# Keep only the significant windows for BF (BF_qvalue_gif_adj < 0.001) and Spearman (quantile spearman_pvalue, 0.025)
 WZA_sig0.01 = WZA_res[, .SD[BF_qvalue_gif_adj < 0.001 
-                      & spearman_pvalue > quantile(spearman_pvalue, 0.975)], 
+                      & spearman_pvalue < quantile(spearman_pvalue, 0.025)], 
                  by = envfactor]
 fwrite(WZA_sig0.01, snakemake@output[[15]])
 
-# Keep only the significant windows for BF (BF_qvalue_gif_adj < 0.001) and Spearman (quantile spearman_pvalue, 0.99)
+# Keep only the significant windows for BF (BF_qvalue_gif_adj < 0.001) and Spearman (quantile spearman_pvalue, 0.01)
 WZA_sig0.01 = WZA_res[, .SD[BF_qvalue_gif_adj < 0.001 
-                      & spearman_pvalue > quantile(spearman_pvalue, 0.99)], 
+                      & spearman_pvalue < quantile(spearman_pvalue, 0.01)], 
                  by = envfactor]
 fwrite(WZA_sig0.01, snakemake@output[[16]])
+
+# The following filters should be applied separately for each environmental factor
+WZA_top0.1_BF = WZA_res[, .SD[BF_pvalue < quantile(BF_pvalue, 0.1)], by = envfactor]
+fwrite(WZA_top0.1_BF, snakemake@output[[17]])
+
+WZA_top0.05_BF = WZA_res[, .SD[BF_pvalue < quantile(BF_pvalue, 0.05)], by = envfactor]
+fwrite(WZA_top0.05_BF, snakemake@output[[18]])
+
+WZA_top0.01_BF = WZA_res[, .SD[BF_pvalue < quantile(BF_pvalue, 0.01)], by = envfactor]
+fwrite(WZA_top0.01_BF, snakemake@output[[19]])
+
+WZA_top0.001_BF = WZA_res[, .SD[BF_pvalue < quantile(BF_pvalue, 0.001)], by = envfactor]
+fwrite(WZA_top0.001_BF, snakemake@output[[20]])
 
 ############################
 # Manhattan plots
