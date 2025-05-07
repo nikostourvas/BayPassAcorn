@@ -6,9 +6,13 @@ library(data.table)
 # Get input parameters from Snakemake
 input_dir <- dirname(snakemake@input[[1]])
 output_file <- snakemake@output[[1]]
-sample_name <- snakemake@params[[2]]
-env_factor <- snakemake@params[[3]]
+# Use the wildcards directly instead of params
+sample_name <- snakemake@wildcards[["sample"]]
+env_factor <- snakemake@wildcards[["envfactor"]]
 chunks <- snakemake@params[[1]]
+
+# Get file type from input filename - detect whether it is processing BF or spearman
+file_type <- if(grepl("spearman", basename(output_file))) "spearman" else "BF"
 
 # Create log connection for output
 log_file <- snakemake@log[[1]]
@@ -18,9 +22,16 @@ sink(log_conn, append = TRUE, type = "message")
 
 # Log starting info
 cat(paste("Starting merging of", chunks, "chunks for", sample_name, "and factor", env_factor, "\n"))
+cat(paste("File type:", file_type, "\n"))
 
-# Get list of all chunk files
-chunk_files <- paste0(input_dir, "/", sample_name, "_", env_factor, "_BF_WZA_output_", 1:chunks, ".csv")
+# Get list of all chunk files using the appropriate prefix
+chunk_files <- paste0(input_dir, "/", sample_name, "_", env_factor, "_", file_type, "_WZA_output_", 1:chunks, ".csv")
+
+# Check if all files exist - abort if any are missing
+missing_files <- chunk_files[!file.exists(chunk_files)]
+if (length(missing_files) > 0) {
+  stop("ERROR: The following chunk files are missing: ", paste(missing_files, collapse = ", "))
+}
 
 # Read first file to get header
 header <- readLines(chunk_files[1], n = 1)
