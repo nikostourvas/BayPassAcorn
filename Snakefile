@@ -385,25 +385,6 @@ rule WZA:
             --output {output.WZA_output_BF_chunks}
         """
 
-rule concatenate_WZA_chunks:
-    input:
-        WZA_output_BF_chunks = expand("results/WZA_res/{{sample}}_{{envfactor}}_BF_WZA_output_{chunk}.csv", 
-                                 chunk=range(1, WZA_CHUNKS+1))
-    output:
-        WZA_output_BF = "results/WZA_res/{sample}_{envfactor}_BF_WZA_output.csv"
-    params:
-        chunks = WZA_CHUNKS,
-        sample = "{sample}",
-        envfactor = ENVFACTOR_NAMES,
-    resources:
-        runtime=RESOURCES["concatenate_WZA_chunks"]["runtime"],
-        mem_mb=RESOURCES["concatenate_WZA_chunks"]["mem_mb"],
-        slurm_partition=RESOURCES["concatenate_WZA_chunks"]["slurm_partition"]
-    log:
-        "logs/concatenate_WZA_chunks/{sample}_{envfactor}.log"
-    script:
-        "scripts/concatenate_WZA_chunks.R"
-
 rule WZA_spearman:
     input:
         WZA_input_filtered_chunks = "data/WZA/{sample}_WZA_input_filtered_chunk{chunk}.csv",
@@ -427,24 +408,34 @@ rule WZA_spearman:
             --output {output.WZA_output_spearman_chunks}
         """
 
-rule concatenate_WZA_spearman_chunks:
+rule concat_WZA_chunks:
     input:
-        WZA_output_spearman_chunks = expand("results/WZA_res/{{sample}}_{{envfactor}}_spearman_WZA_output_{chunk}.csv", 
-                                 chunk=range(1, WZA_CHUNKS+1))
+        lambda wc: expand(
+            "results/WZA_res/{sample}_{envfactor}_{type}_WZA_output_{i}.csv",
+            sample    = wc.sample,
+            envfactor = wc.envfactor,
+            type      = wc.type,
+            i         = range(1, WZA_CHUNKS + 1)
+        )
     output:
-        WZA_output_spearman = "results/WZA_res/{sample}_{envfactor}_spearman_WZA_output.csv"
-    params:
-        chunks = WZA_CHUNKS,
-        sample = "{sample}",
-        envfactor = ENVFACTOR_NAMES,
+        "results/WZA_res/{sample}_{envfactor}_{type}_WZA_output.csv"
     resources:
         runtime=RESOURCES["concatenate_WZA_chunks"]["runtime"],
         mem_mb=RESOURCES["concatenate_WZA_chunks"]["mem_mb"],
         slurm_partition=RESOURCES["concatenate_WZA_chunks"]["slurm_partition"]
     log:
-        "logs/concatenate_WZA_spearman_chunks/{sample}_{envfactor}.log"
-    script:
-        "scripts/concatenate_WZA_chunks.R"
+        "logs/concatenate_WZA_chunks/{sample}_{envfactor}_{type}.log"
+    shell:
+        r"""
+        (
+          # write header once …
+          head -n 1 {input[0]}
+          # … then body of every chunk
+          for f in {input}; do
+              tail -n +2 "$f"
+          done
+        ) > {output}
+        """
 
 rule WZA_diagnostics:
     input:
