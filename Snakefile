@@ -369,7 +369,6 @@ rule WZA:
             --large_i_small_p \
             --min_snps 3 \
             --retain POS \
-            --verbose \
             --output {output.WZA_output_BF}
         """
 
@@ -393,7 +392,6 @@ rule WZA_spearman:
             --large_i_small_p \
             --min_snps 3 \
             --retain POS \
-            --verbose \
             --output {output.WZA_output_spearman}
         """
 
@@ -416,17 +414,19 @@ rule WZA_diagnostics:
         WZA_manhattan_plots_BF_wo_GIF = "results/WZA_res/{sample}_WZA_manhattan_plots_BF_wo_GIF.png",
         WZA_manhattan_plots_spearman = "results/WZA_res/{sample}_WZA_manhattan_plots_spearman.png",
         WZA_manhattan_plots_spearman_wo_GIF = "results/WZA_res/{sample}_WZA_manhattan_plots_spearman_wo_GIF.png",
-        WZA_significant_windows_a = "results/WZA_res/{sample}_significant_windows_q0.1.csv",
-        WZA_significant_windows_b = "results/WZA_res/{sample}_significant_windows_q0.05.csv",
-        WZA_significant_windows_c = "results/WZA_res/{sample}_significant_windows_q0.01.csv",
-        WZA_significant_windows_d = "results/WZA_res/{sample}_significant_windows_q0.001.csv",
+        WZA_q0_1 = "results/WZA_res/{sample}_significant_windows_q0.1.csv",
+        WZA_q0_05 = "results/WZA_res/{sample}_significant_windows_q0.05.csv",
+        WZA_q0_01 = "results/WZA_res/{sample}_significant_windows_q0.01.csv",
+        WZA_q0_001 = "results/WZA_res/{sample}_significant_windows_q0.001.csv",
+        WZA_q0_1_rho_top2_5 = "results/WZA_res/{sample}_significant_windows_q0.1_rho_top2_5.csv",
+        WZA_q0_05_rho_top2_5 = "results/WZA_res/{sample}_significant_windows_q0.05_rho_top2_5.csv",
+        WZA_q0_01_rho_top2_5 = "results/WZA_res/{sample}_significant_windows_q0.01_rho_top2_5.csv",
+        WZA_q0_001_rho_top2_5 = "results/WZA_res/{sample}_significant_windows_q0.001_rho_top2_5.csv",
         WZA_top0_1 = "results/WZA_res/{sample}_significant_windows_top0_1.csv",
         WZA_top0_05 = "results/WZA_res/{sample}_significant_windows_top0_05.csv",
         WZA_top0_01 = "results/WZA_res/{sample}_significant_windows_top0_01.csv",
         WZA_top0_001 = "results/WZA_res/{sample}_significant_windows_top0_001.csv",
-        WZA_q0_01_rho_top2_5 = "results/WZA_res/{sample}_significant_windows_q0.01_rho_top2_5.csv",
-        WZA_q0_01_rho_top1 = "results/WZA_res/{sample}_significant_windows_q0.01_rho_top1.csv",
-        WZA_q0_001_rho_top2_5 = "results/WZA_res/{sample}_significant_windows_q0.001_rho_top2_5.csv",
-        WZA_q0_001_rho_top1 = "results/WZA_res/{sample}_significant_windows_q0.001_rho_top1.csv",
+        WZA_top0_01_rho_top2_5 = "results/WZA_res/{sample}_significant_windows_top0_01_rho_top2_5.csv",
+        WZA_top0_001_rho_top2_5 = "results/WZA_res/{sample}_significant_windows_top0_001_rho_top2_5.csv",
         WZA_output_fdr = expand("results/WZA_res/{{sample}}_{envfactor}_WZA_output_fdr.csv", envfactor=ENVFACTOR_NAMES)
     script: "scripts/WZA_diagnostics.R"
