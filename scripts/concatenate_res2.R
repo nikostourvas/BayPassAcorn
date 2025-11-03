@@ -11,6 +11,9 @@ sink(log_conn, append = TRUE, type = "message")
 # Description: Concatenate results from BayPass output files and snp_det files
 # Modified from concatenate_res.R to include the option of retrieving Spearman correlation coefficients
 
+scipen=999  # avoid scientific notation
+options(scipen=scipen)
+
 concatenate_res2 <- function(dir="./",anaprefix="ana",extension="",nsubsets=2,
                           snpdet_prefix="./detsnp.sub",retrieve_pi_xtx=TRUE,retrieve_bfis=TRUE,retrieve_spearman=FALSE){
   #extension should be the same for snpdet files and baypass output files (i.e., all files should be compressed the same way or not)
