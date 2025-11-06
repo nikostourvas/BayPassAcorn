@@ -327,19 +327,35 @@ rule prepare_WZA:
         mem_mb=RESOURCES["prepare_WZA"]["mem_mb"],
         slurm_partition=RESOURCES["prepare_WZA"]["slurm_partition"]
     output:
-        WZA_input = "data/WZA/{sample}_WZA_input.csv"
+        tmp1 = "data/WZA/{sample}_tmp1.csv",
+        tmpMAF = "data/WZA/{sample}_tmpMAF.csv"
     shell:
         """
         paste -d',' {input.covariateresults_spearman} <(cut -d ',' -f 6- {input.covariateresults}) \
-            | awk -f scripts/Make_Genomic_Windows.sh -v window_size={params.window_size} > tmp1_{wildcards.sample}
+            | awk -f scripts/Make_Genomic_Windows.sh -v window_size={params.window_size} > {output.tmp1}
 
-        awk -f scripts/Calculate_Mean_MAF.sh {input.frequency_table} | cut -d',' -f3 > tmpMAF_{wildcards.sample}
-
-        paste -d',' tmp1_{wildcards.sample} tmpMAF_{wildcards.sample} > {output}
-        rm tmp1_{wildcards.sample} tmpMAF_{wildcards.sample}
+        awk -f scripts/Calculate_Mean_MAF.sh {input.frequency_table} > {output.tmpMAF}
         """
 
-rule filter_WZA_input:
+rule merge_WZA_inputs:
+    input:
+        tmp1 = "data/WZA/{sample}_tmp1.csv",
+        tmpMAF = "data/WZA/{sample}_tmpMAF.csv",
+        gff = config.get("gff_file", [])  # Optional GFF file to exclude genomic regions
+    resources:
+        runtime=RESOURCES["prepare_WZA"]["runtime"],
+        mem_mb=RESOURCES["prepare_WZA"]["mem_mb"],
+        slurm_partition=RESOURCES["prepare_WZA"]["slurm_partition"]
+    params:
+        gff = config.get("gff_file", "")
+    log:
+        "logs/merge_WZA_inputs/{sample}.log"
+    output:
+        WZA_input = "data/WZA/{sample}_WZA_input.csv"
+    script:
+        "scripts/merge_WZA_inputs.R"
+
+rule MAF_filter_WZA_input:
     input:
         WZA_input = "data/WZA/{sample}_WZA_input.csv",
     params:
@@ -347,7 +363,7 @@ rule filter_WZA_input:
     output:
         WZA_input_filtered = "data/WZA/{sample}_WZA_input_filtered.csv"
     script:
-        "scripts/filter_WZA_input.R"
+        "scripts/maf_filter_WZA_input.R"
 
 rule WZA:
     input:
