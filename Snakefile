@@ -327,8 +327,8 @@ rule prepare_WZA:
         mem_mb=RESOURCES["prepare_WZA"]["mem_mb"],
         slurm_partition=RESOURCES["prepare_WZA"]["slurm_partition"]
     output:
-        tmp1 = "data/WZA/{sample}_tmp1.csv",
-        tmpMAF = "data/WZA/{sample}_tmpMAF.csv"
+        tmp1 = temp("data/WZA/{sample}_tmp1.csv"),
+        tmpMAF = temp("data/WZA/{sample}_tmpMAF.csv")
     shell:
         """
         paste -d',' {input.covariateresults_spearman} <(cut -d ',' -f 6- {input.covariateresults}) \
