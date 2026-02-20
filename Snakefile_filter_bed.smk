@@ -31,7 +31,7 @@ WZA_FDR = config["parameters"]["WZA_fdr"]
 
 # Get resources from config file
 RESOURCES = config["resources"]
-localrules: all, generate_complementary_inputs, compare_omega
+localrules: all
 
 # function to calculate the number of populations
 import os
