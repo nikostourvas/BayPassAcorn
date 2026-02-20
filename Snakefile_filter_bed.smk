@@ -75,7 +75,7 @@ rule make_snps_bed:
                 chr=$1;
                 gsub(/\.Sc/, "_Sc", chr);
             }}
-            print chr, $2-1, $2, $0
+            print chr, sprintf("%d", $2-1), sprintf("%d", $2), $0
         }}' {input.covariateresults} > {output.covariateresults_bed}
 
         awk 'BEGIN{{FS=","; OFS="\t"}} NR > 1 {{
@@ -85,7 +85,7 @@ rule make_snps_bed:
                 chr=$1;
                 gsub(/\.Sc/, "_Sc", chr);
             }}
-            print chr, $2-1, $2, $0
+            print chr, sprintf("%d", $2-1), sprintf("%d", $2), $0
         }}' {input.covariateresults_spearman} > {output.covariateresults_spearman_bed}
         """
 
