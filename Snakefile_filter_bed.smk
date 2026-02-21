@@ -45,6 +45,7 @@ rule all:
     input:
         expand("results/{sample}_concatenated_res_covariate_filtered.csv", sample=SAMPLES),
         expand("results/{sample}_concatenated_res_covariate_spearman_filtered.csv", sample=SAMPLES),
+        expand("results/{sample}_concatenated_res_covariate_beta_is_filtered.csv", sample=SAMPLES),
         # expand("data/WZA/{sample}_WZA_input.csv", sample=SAMPLES),
         # expand("data/WZA/{sample}_WZA_input_filtered.csv", sample=SAMPLES),
         # expand("results/WZA_res/{sample}_{envfactor}_BF_WZA_output.csv", sample=SAMPLES, envfactor=ENVFACTOR_NAMES),
@@ -54,14 +55,36 @@ rule all:
 
 
 
+rule extract_beta_is:
+    input:
+        envfactor_names = "data/{sample}_efile_envfactor_names",
+        betai_reg = expand("results/{{sample}}_baypassSplitOut_covariate/covariate_{i}_summary_betai_reg.out",
+                           i=range(1, N_SUBS+1))
+    params:
+        anaprefix = "results/{sample}_baypassSplitOut_covariate/covariate",
+        nsubsets = N_SUBS,
+        snpdetprefix = "results/subsets/{sample}.snpdet.sub",
+    resources:
+        runtime=RESOURCES["extract_beta_is"]["runtime"],
+        mem_mb=RESOURCES["extract_beta_is"]["mem_mb"],
+        slurm_partition=RESOURCES["extract_beta_is"]["slurm_partition"]
+    log:
+        "logs/extract_beta_is/{sample}.log"
+    output:
+        beta_is_results = "results/{sample}_concatenated_res_covariate_beta_is.csv"
+    script: "scripts/extract_beta_is.R"
+
+
 # The following 3 rules remove known Transposable Elements (TEs) from the BayPass results.
 rule make_snps_bed:
     input:
         covariateresults = "results/{sample}_concatenated_res_covariate.csv",
         covariateresults_spearman = "results/{sample}_concatenated_res_covariate_spearman.csv",
+        covariateresults_beta_is = "results/{sample}_concatenated_res_covariate_beta_is.csv",
     output:
         covariateresults_bed = "results/{sample}_concatenated_res_covariate.bed",
         covariateresults_spearman_bed = "results/{sample}_concatenated_res_covariate_spearman.bed",
+        covariateresults_beta_is_bed = "results/{sample}_concatenated_res_covariate_beta_is.bed",
     resources:
         runtime=RESOURCES["make_snps_bed"]["runtime"],
         mem_mb=RESOURCES["make_snps_bed"]["mem_mb"],
@@ -87,16 +110,28 @@ rule make_snps_bed:
             }}
             print chr, sprintf("%d", $2-1), sprintf("%d", $2), $0
         }}' {input.covariateresults_spearman} > {output.covariateresults_spearman_bed}
+
+        awk 'BEGIN{{FS=","; OFS="\t"}} NR > 1 {{
+            if ($1 ~ /^[0-9]+$/) {{
+                chr=sprintf("Qrob_Chr%02d", $1); 
+            }} else {{
+                chr=$1;
+                gsub(/\.Sc/, "_Sc", chr);
+            }}
+            print chr, sprintf("%d", $2-1), sprintf("%d", $2), $0
+        }}' {input.covariateresults_beta_is} > {output.covariateresults_beta_is_bed}
         """
 
 rule intersect_snps_tes:
     input:
         covariateresults_bed = "results/{sample}_concatenated_res_covariate.bed",
         covariateresults_spearman_bed = "results/{sample}_concatenated_res_covariate_spearman.bed",
+        covariateresults_beta_is_bed = "results/{sample}_concatenated_res_covariate_beta_is.bed",
         te_bed = "data/tes.bed",
     output:
         filtered_bed = "results/{sample}_concatenated_res_covariate_filtered.bed",
         filtered_spearman_bed = "results/{sample}_concatenated_res_covariate_spearman_filtered.bed",
+        filtered_beta_is_bed = "results/{sample}_concatenated_res_covariate_beta_is_filtered.bed",
     resources:
         runtime=RESOURCES["intersect_snps_tes"]["runtime"],
         mem_mb=RESOURCES["intersect_snps_tes"]["mem_mb"],
@@ -105,17 +140,21 @@ rule intersect_snps_tes:
         """
         bedtools intersect -a {input.covariateresults_bed} -b {input.te_bed} -v > {output.filtered_bed}
         bedtools intersect -a {input.covariateresults_spearman_bed} -b {input.te_bed} -v > {output.filtered_spearman_bed}
+        bedtools intersect -a {input.covariateresults_beta_is_bed} -b {input.te_bed} -v > {output.filtered_beta_is_bed}
         """
 
 rule make_filtered_results_covariate:
     input:
         covariateresults = "results/{sample}_concatenated_res_covariate.csv",
         covariateresults_spearman = "results/{sample}_concatenated_res_covariate_spearman.csv",
+        covariateresults_beta_is = "results/{sample}_concatenated_res_covariate_beta_is.csv",
         filtered_bed = "results/{sample}_concatenated_res_covariate_filtered.bed",
         filtered_spearman_bed = "results/{sample}_concatenated_res_covariate_spearman_filtered.bed",
+        filtered_beta_is_bed = "results/{sample}_concatenated_res_covariate_beta_is_filtered.bed",
     output:
         filtered_covariateresults = "results/{sample}_concatenated_res_covariate_filtered.csv",
         filtered_covariateresults_spearman = "results/{sample}_concatenated_res_covariate_spearman_filtered.csv",
+        filtered_covariateresults_beta_is = "results/{sample}_concatenated_res_covariate_beta_is_filtered.csv",
     resources:
         runtime=RESOURCES["make_filtered_results_covariate"]["runtime"],
         mem_mb=RESOURCES["make_filtered_results_covariate"]["mem_mb"],
@@ -127,6 +166,9 @@ rule make_filtered_results_covariate:
 
         head -n 1 {input.covariateresults_spearman} > {output.filtered_covariateresults_spearman}
         cut -f 4- {input.filtered_spearman_bed} >> {output.filtered_covariateresults_spearman}
+
+        head -n 1 {input.covariateresults_beta_is} > {output.filtered_covariateresults_beta_is}
+        cut -f 4- {input.filtered_beta_is_bed} >> {output.filtered_covariateresults_beta_is}
         """
 
 # rule gea_scatter_plots:
